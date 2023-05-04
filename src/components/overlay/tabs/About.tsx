@@ -1,14 +1,10 @@
-import React, { useContext } from 'react'
-
-import { AppContext } from '@/AppContext'
-import { Context } from '@/types'
+import React from 'react'
 
 const About = () => {
-  const appContext = useContext<Context>(AppContext)
-
   return (
     <>
       <h2>About This App</h2>
+      Created by...
     </>
   )
 }

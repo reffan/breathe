@@ -23,17 +23,20 @@ const Scene = () => {
   return (
     <>
       <h2>Scene</h2>
-      Current Scene:
+      Current Scene: {appContext.settings.scene}
       <div className='controls'>
-        {background.map((step, index) => {
+        {background.map((value, index) => {
           return (
             <div key={`scene-controls-${index}`} className='controls-range'>
               <div className='layout-row'>
                 <div className='layout-column'>
-                  <label htmlFor={`background-${index}`}>{step}</label>
+                  <label htmlFor={`background-${index}`}>{value}</label>
                 </div>
                 <div className='layout-column--align-end'>
-                  <span>{appContext.settings.background[index]}</span>
+                  <span>
+                    {appContext.settings.background[index]}
+                    {/* {index === 0 ? '°' : '%'} */}
+                  </span>
                 </div>
               </div>
               <input

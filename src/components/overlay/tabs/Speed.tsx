@@ -35,7 +35,10 @@ const Speed = () => {
               <label htmlFor='speed'>Speed</label>
             </div>
             <div className='layout-column--align-end'>
-              <span>{appContext.settings.speed}x</span>
+              <span>
+                {appContext.settings.speed}
+                {/* {'x'} */}
+              </span>
             </div>
           </div>
           <input
@@ -55,7 +58,10 @@ const Speed = () => {
               <label htmlFor='cycles'>Cycles</label>
             </div>
             <div className='layout-column--align-end'>
-              <span>{appContext.settings.cycles}x</span>
+              <span>
+                {appContext.settings.cycles}
+                {/* {'x'} */}
+              </span>
             </div>
           </div>
           <input
