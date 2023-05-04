@@ -11,7 +11,8 @@ export type Settings = {
   isMuted: boolean
   speed: number
   cycles: number
-  steps: [number, number, number, number]
+  pattern: [number, number, number, number]
+  scene: 'DEBUG'
   background: [number, number, number]
 }
 

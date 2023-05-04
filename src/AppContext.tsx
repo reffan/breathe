@@ -10,7 +10,8 @@ export const AppContextProvider = ({ children }: { children: ReactNode }) => {
     isMuted: false,
     speed: 1,
     cycles: 4,
-    steps: [4, 0, 8, 0],
+    pattern: [4, 0, 8, 0],
+    scene: 'DEBUG',
     background: [248, 100, 84],
   })
 

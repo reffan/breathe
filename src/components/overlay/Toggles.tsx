@@ -7,7 +7,7 @@ const Toggles = () => {
   const appContext = useContext<Context>(AppContext)
 
   const togglePlay = () => {
-    appContext.setSettings((previousSettings: Settings) => {
+    appContext.setSettings((previousSettings: Settings): Settings => {
       return {
         ...previousSettings,
         isPlaying: !previousSettings.isPlaying,
@@ -16,7 +16,7 @@ const Toggles = () => {
   }
 
   const toggleMute = () => {
-    appContext.setSettings((previousSettings: Settings) => {
+    appContext.setSettings((previousSettings: Settings): Settings => {
       return {
         ...previousSettings,
         isMuted: !previousSettings.isMuted,
