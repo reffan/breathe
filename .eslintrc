@@ -1,0 +1,28 @@
+{
+  "parser": "@typescript-eslint/parser",
+  "settings": {
+    "react": {
+      "version": "detect"
+    },
+    "import/resolver": {
+      "typescript": {}
+    }
+  },
+  "extends": [
+    "eslint:recommended",
+    "plugin:@typescript-eslint/recommended",
+    "plugin:@typescript-eslint/eslint-recommended",
+    "plugin:react/recommended",
+    "plugin:import/recommended",
+    "plugin:jsx-a11y/recommended",
+    "eslint-config-prettier"
+  ],
+  "rules": {
+    "quotes": [2, "single"],
+    "react-hooks/exhaustive-deps": "off"
+  },
+  "env": {
+    "browser": true
+  },
+  "plugins": ["@typescript-eslint"]
+}

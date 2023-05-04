@@ -1,0 +1,83 @@
+@use './variables.scss';
+
+#overlay {
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+
+  width: 100%;
+  min-height: 100dvh;
+}
+
+.overlay {
+  &-header {
+    margin: 0 auto;
+    padding: 2rem;
+
+    width: variables.$overlay-width;
+  }
+
+  &-branding {
+    display: flex;
+    justify-content: center;
+  }
+
+  &-progress {
+    display: flex;
+    justify-content: center;
+  }
+
+  &-footer {
+    margin: 0 auto;
+    padding: 2rem;
+
+    width: variables.$overlay-width;
+  }
+
+  &-tabs {
+  }
+
+  &-toggles {
+    display: flex;
+    justify-content: center;
+  }
+}
+
+.tabs {
+  &-viewer {
+    display: flex;
+    list-style: none;
+  }
+
+  &-view {
+    &--open {
+      display: initial;
+    }
+
+    &--closed {
+      display: none;
+    }
+  }
+
+  &-switcher {
+    display: flex;
+    justify-content: center;
+
+    list-style: none;
+  }
+
+  &-switch {
+    &--active {
+      opacity: initial;
+    }
+
+    &--inactive {
+      opacity: 0.6;
+    }
+  }
+}
