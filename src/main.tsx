@@ -1,10 +1,10 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 
+import { AppContextProvider } from '@/AppContext'
+
 import '@/main.scss'
 import App from '@/App'
-
-import { AppContextProvider } from '@/AppContext'
 
 ReactDOM.createRoot(document.getElementById('app') as HTMLElement).render(
   <React.StrictMode>

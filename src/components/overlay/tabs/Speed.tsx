@@ -1,11 +1,12 @@
 import React, { useContext } from 'react'
+import { Context, Settings } from '@/types'
 
 import { AppContext } from '@/AppContext'
-import { Context, Settings } from '@/types'
 
 const Speed = () => {
   const appContext = useContext<Context>(AppContext)
 
+  // TODO: figure out the proper type for events
   const changeSpeed = (e: any) => {
     appContext.setSettings((previousSettings: Settings): Settings => {
       return {
@@ -15,6 +16,7 @@ const Speed = () => {
     })
   }
 
+  // TODO: figure out the proper type for events
   const changeCycles = (e: any) => {
     appContext.setSettings((previousSettings: Settings): Settings => {
       return {
@@ -24,10 +26,21 @@ const Speed = () => {
     })
   }
 
+  const durationText = () => {
+    const countsInCycle = appContext.settings.pattern.reduce((totalCounts, stepCounts) => {
+      return totalCounts + stepCounts
+    }, 0)
+
+    const countDuration = 1 / appContext.settings.speed
+    const totalDuration = Math.round((appContext.settings.cycles * countsInCycle * countDuration) / 60)
+
+    return `${totalDuration} min${totalDuration != 1 ? 's' : ''}`
+  }
+
   return (
     <>
       <h2>Speed & Duration</h2>
-      Current Duration: {0}
+      Current Duration: {durationText()}
       <div className='controls'>
         <div className='controls-range'>
           <div className='layout-row'>

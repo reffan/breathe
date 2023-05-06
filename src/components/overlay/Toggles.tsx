@@ -1,33 +1,36 @@
 import React, { useContext } from 'react'
+import { Context } from '@/types'
 
 import { AppContext } from '@/AppContext'
-import { Context, Settings } from '@/types'
+import { useLoop } from '@/libraries/loop'
+import { play as playLabel, mute as muteLabel } from '@/libraries/labels'
 
 const Toggles = () => {
   const appContext = useContext<Context>(AppContext)
+  const { runLoop, resetLoop } = useLoop()
 
   const togglePlay = () => {
-    appContext.setSettings((previousSettings: Settings): Settings => {
-      return {
-        ...previousSettings,
-        isPlaying: !previousSettings.isPlaying,
-      }
+    resetLoop()
+
+    if (!appContext.isPlaying) {
+      runLoop()
+    }
+
+    appContext.setIsPlaying((previousState: boolean): boolean => {
+      return !previousState
     })
   }
 
   const toggleMute = () => {
-    appContext.setSettings((previousSettings: Settings): Settings => {
-      return {
-        ...previousSettings,
-        isMuted: !previousSettings.isMuted,
-      }
+    appContext.setIsMuted((previousState: boolean): boolean => {
+      return !previousState
     })
   }
 
   return (
     <>
-      <button onClick={togglePlay}>{!appContext.settings.isPlaying ? 'Play' : 'Stop'}</button>
-      <button onClick={toggleMute}>{!appContext.settings.isMuted ? 'Mute' : 'Unmute'}</button>
+      <button onClick={togglePlay}>{playLabel[+appContext.isPlaying]}</button>
+      <button onClick={toggleMute}>{muteLabel[+appContext.isMuted]}</button>
     </>
   )
 }

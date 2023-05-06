@@ -1,13 +1,13 @@
 import React, { useContext } from 'react'
-
-import { AppContext } from '@/AppContext'
 import { Context, Settings } from '@/types'
 
-const steps = ['Inhale', 'Hold (In)', 'Exhale', 'Hold (Out)']
+import { AppContext } from '@/AppContext'
+import { steps } from '@/libraries/labels'
 
 const Pattern = () => {
   const appContext = useContext<Context>(AppContext)
 
+  // TODO: figure out the proper type for events
   const changePattern = (e: any, step: number) => {
     appContext.setSettings((previousSettings: Settings): Settings => {
       const pattern = previousSettings.pattern
@@ -25,12 +25,12 @@ const Pattern = () => {
       <h2>Breathing Pattern</h2>
       Current Pattern: {appContext.settings.pattern.join(' / ')}
       <div className='controls'>
-        {steps.map((step, index) => {
+        {steps.map((stepLabel, index) => {
           return (
             <div key={`pattern-controls-${index}`} className='controls-range'>
               <div className='layout-row'>
                 <div className='layout-column'>
-                  <label htmlFor={`pattern-${index}`}>{step}</label>
+                  <label htmlFor={`pattern-${index}`}>{stepLabel}</label>
                 </div>
                 <div className='layout-column--align-end'>
                   <span>{appContext.settings.pattern[index]}</span>

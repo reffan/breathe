@@ -1,13 +1,13 @@
 import React, { useContext } from 'react'
-
-import { AppContext } from '@/AppContext'
 import { Context, Settings } from '@/types'
 
-const background = ['Hue', 'Saturation', 'Lightness']
+import { AppContext } from '@/AppContext'
+import { background } from '@/libraries/labels'
 
 const Scene = () => {
   const appContext = useContext<Context>(AppContext)
 
+  // TODO: figure out the proper type for events
   const changeBackground = (e: any, step: number) => {
     appContext.setSettings((previousSettings: Settings): Settings => {
       const background = previousSettings.background
@@ -25,12 +25,12 @@ const Scene = () => {
       <h2>Scene</h2>
       Current Scene: {appContext.settings.scene}
       <div className='controls'>
-        {background.map((value, index) => {
+        {background.map((valueLabel, index) => {
           return (
             <div key={`scene-controls-${index}`} className='controls-range'>
               <div className='layout-row'>
                 <div className='layout-column'>
-                  <label htmlFor={`background-${index}`}>{value}</label>
+                  <label htmlFor={`background-${index}`}>{valueLabel}</label>
                 </div>
                 <div className='layout-column--align-end'>
                   <span>
