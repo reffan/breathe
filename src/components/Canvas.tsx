@@ -1,10 +1,20 @@
-import React, { useContext } from 'react'
+import React, { useContext, useEffect, useRef } from 'react'
 import { Context } from '@/types'
 
 import { AppContext } from '@/AppContext'
+import { useScene } from '@/libraries/scene'
 
 const Canvas = () => {
   const appContext = useContext<Context>(AppContext)
+  const { setupCanvas } = useScene()
+
+  const canvas = useRef<HTMLCanvasElement>(null)
+
+  useEffect(() => {
+    if (canvas.current) {
+      setupCanvas(canvas.current, window.innerWidth, window.innerHeight)
+    }
+  }, [setupCanvas])
 
   const backgroundColors = [
     `hsl(
@@ -27,7 +37,7 @@ const Canvas = () => {
         backgroundImage: `url('./assets/png/texture.png'), linear-gradient(${backgroundColors[0]}, ${backgroundColors[1]})`,
       }}
     >
-      --- CANVAS ---
+      <canvas ref={canvas} />
     </div>
   )
 }

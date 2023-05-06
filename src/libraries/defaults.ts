@@ -4,7 +4,7 @@ const defaultSettings: Settings = {
   speed: 1,
   cycles: 4,
   pattern: [4, 0, 8, 0],
-  scene: 'DEBUG',
+  scene: 'aqua',
   background: [264, 60, 60],
 }
 

@@ -1,3 +1,5 @@
+import { Container } from 'pixi.js'
+
 // TODO: figure out the proper types for setState functions
 export type Context = {
   isPlaying: boolean
@@ -16,7 +18,7 @@ export type Settings = {
   cycles: number
   pattern: [number, number, number, number]
 
-  scene: 'DEBUG'
+  scene: 'aqua'
   background: [number, number, number]
 }
 
@@ -26,4 +28,9 @@ export type Progress = {
   cycle: number
   step: number
   count: number
+}
+
+export type Scene = {
+  update: () => void
+  render: Container
 }

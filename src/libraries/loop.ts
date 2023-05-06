@@ -6,7 +6,7 @@ import { TOTAL_STEPS } from '@/libraries/constants'
 import { defaultProgress } from '@/libraries/defaults'
 
 // TODO: look up proper typing for a setTimeout
-let timeoutFn: any = undefined
+let timeoutFn: any
 let progress: Progress = defaultProgress
 
 const useLoop = () => {
