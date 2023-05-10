@@ -6,12 +6,13 @@ import Pattern from './tabs/Pattern'
 import Scene from './tabs/Scene'
 import About from './tabs/About'
 
+// TODO: extract this?
 const tabs = [
-  { label: 'DEBUG', component: Debug },
-  { label: 'Speed', component: Speed },
-  { label: 'Pattern', component: Pattern },
-  { label: 'Scene', component: Scene },
-  { label: 'About', component: About },
+  { name: 'DEBUG', component: Debug },
+  { name: 'Speed', component: Speed },
+  { name: 'Pattern', component: Pattern },
+  { name: 'Scene', component: Scene },
+  { name: 'About', component: About },
 ]
 
 const Tabs = () => {
@@ -39,12 +40,13 @@ const Tabs = () => {
           return (
             <li key={`tabs-switch-${index}`}>
               <button
-                className={currentTab === index ? 'tabs-switch--active' : 'tabs-switch--inactive'}
+                type='button'
                 onClick={() => {
                   switchTab(index)
                 }}
+                className={currentTab === index ? 'tabs-switch--active' : 'tabs-switch--inactive'}
               >
-                {tab.label}
+                {tab.name}
               </button>
             </li>
           )

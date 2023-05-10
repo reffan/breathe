@@ -1,4 +1,4 @@
-import React, { ReactNode, createContext, useEffect, useState } from 'react'
+import React, { ReactNode, createContext, useState } from 'react'
 import { Context, Settings, Progress } from '@/types'
 
 import { defaultSettings, defaultProgress } from '@/libraries/defaults'
@@ -12,26 +12,6 @@ const AppContextProvider = ({ children }: { children: ReactNode }) => {
 
   const [settings, setSettings] = useState<Settings>(defaultSettings)
   const [progress, setProgress] = useState<Progress>(defaultProgress)
-
-  // useEffect(() => {
-  //   if (isPlaying) {
-  //     console.log('isPlaying YAY')
-  //   } else {
-  //     console.log('isPlaying NAY')
-  //   }
-
-  //   return
-  // }, [isPlaying])
-
-  // useEffect(() => {
-  //   if (isMuted) {
-  //     console.log('isMuted YAY')
-  //   } else {
-  //     console.log('isMuted NAY')
-  //   }
-
-  //   return
-  // }, [isMuted])
 
   const provided: Context = {
     isPlaying,

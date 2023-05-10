@@ -8,9 +8,9 @@ const Speed = () => {
 
   // TODO: figure out the proper type for events
   const changeSpeed = (e: any) => {
-    appContext.setSettings((previousSettings: Settings): Settings => {
+    appContext.setSettings((currentSettings: Settings): Settings => {
       return {
-        ...previousSettings,
+        ...currentSettings,
         speed: +e.target.value,
       }
     })
@@ -18,9 +18,9 @@ const Speed = () => {
 
   // TODO: figure out the proper type for events
   const changeCycles = (e: any) => {
-    appContext.setSettings((previousSettings: Settings): Settings => {
+    appContext.setSettings((currentSettings: Settings): Settings => {
       return {
-        ...previousSettings,
+        ...currentSettings,
         cycles: +e.target.value,
       }
     })

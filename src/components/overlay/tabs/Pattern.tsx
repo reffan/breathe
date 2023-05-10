@@ -9,12 +9,12 @@ const Pattern = () => {
 
   // TODO: figure out the proper type for events
   const changePattern = (e: any, step: number) => {
-    appContext.setSettings((previousSettings: Settings): Settings => {
-      const pattern = previousSettings.pattern
+    appContext.setSettings((currentSettings: Settings): Settings => {
+      const pattern = currentSettings.pattern
       pattern[step] = +e.target.value
 
       return {
-        ...previousSettings,
+        ...currentSettings,
         pattern,
       }
     })

@@ -14,8 +14,13 @@ const Canvas = () => {
     if (canvas.current) {
       setupCanvas(canvas.current, window.innerWidth, window.innerHeight)
     }
+
+    return () => {
+      // TODO: destroy canvas?
+    }
   }, [setupCanvas])
 
+  // TODO: tween the colors?
   const backgroundColors = [
     `hsl(
       ${appContext.settings.background[0] + 6}, 
@@ -33,7 +38,7 @@ const Canvas = () => {
     <div
       id='canvas'
       style={{
-        backgroundColor: backgroundColors[1],
+        background: backgroundColors[1],
         backgroundImage: `url('./assets/png/texture.png'), linear-gradient(${backgroundColors[0]}, ${backgroundColors[1]})`,
       }}
     >
