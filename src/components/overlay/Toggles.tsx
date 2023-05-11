@@ -2,7 +2,7 @@ import React, { useContext } from 'react'
 import { Context } from '@/types'
 
 import { AppContext } from '@/AppContext'
-import { dispatchEvent } from '@/libraries/events'
+import { dispatchEvent } from '@/libraries/event'
 import { play as playLabel, mute as muteLabel } from '@/utilities/labels'
 
 const Toggles = () => {

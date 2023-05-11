@@ -2,7 +2,7 @@ import { useContext, useEffect } from 'react'
 import { Context, Settings, Progress, DurationFractions } from '@/types'
 
 import { AppContext } from '@/AppContext'
-import { subscribeEvent, unsubscribeEvent, dispatchEvent } from '@/libraries/events'
+import { subscribeEvent, unsubscribeEvent, dispatchEvent } from '@/libraries/event'
 import { TOTAL_COUNTDOWN_COUNTS, TOTAL_PATTERN_STEPS } from '@/utilities/constants'
 import { defaultProgress, defaultSettings } from '@/utilities/defaults'
 
@@ -70,8 +70,8 @@ const useLoop = () => {
     })
   }
 
+  // TODO: double check this logic
   const advanceCount = () => {
-    // TODO: double check this logic
     if (progress.cycle < settings.cycles) {
       progress = advanceCountLogic()
 
@@ -85,7 +85,6 @@ const useLoop = () => {
     }
 
     // TODO: don't like how Scene is tightly coupled?
-    dispatchEvent('stopScene')
 
     // TODO: why does all of this happen so late?
     // TODO: how does this one get cleared?
@@ -93,6 +92,8 @@ const useLoop = () => {
       appContext.setIsPlaying((): boolean => {
         return false
       })
+
+      dispatchEvent('stopScene')
 
       resetLoop()
     }, countDuration * 2)

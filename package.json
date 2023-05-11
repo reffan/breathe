@@ -1,5 +1,5 @@
 {
-  "name": "breathe-2023",
+  "name": "breathe-2023-react",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -8,6 +8,7 @@
     "build": "tsc && vite build"
   },
   "dependencies": {
+    "@pixi/sound": "^5.1.2",
     "animejs": "^3.2.1",
     "pixi.js": "^7.2.4",
     "react": "^18.2.0",

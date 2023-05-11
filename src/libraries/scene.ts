@@ -5,7 +5,8 @@ import { Context, Scenes, SceneComponent, Animation, SceneAnimation } from '@/ty
 
 import { AppContext } from '@/AppContext'
 import { useLoop } from '@/libraries/loop'
-import { subscribeEvent, unsubscribeEvent, dispatchEvent } from '@/libraries/events'
+import { subscribeEvent, unsubscribeEvent, dispatchEvent } from '@/libraries/event'
+import { playSound } from '@/libraries/sound'
 import { ENTER_SCENE_DELAY } from '@/utilities/constants'
 import { defaultAnimation, defaultSettings } from '@/utilities/defaults'
 
@@ -152,10 +153,12 @@ const useScene = () => {
   }
 
   const startScene = async () => {
+    playSound.play('kalimba-f4')
     await transitionAnimation('startAnimation')
   }
 
   const stopScene = async () => {
+    playSound.play('kalimba-b3')
     await transitionAnimation('stopAnimation')
     dispatchEvent('idleScene')
   }
@@ -171,6 +174,7 @@ const useScene = () => {
     const progress = loopProgress()
     const durations = loopDurations(scene().durationFractions)
 
+    // MARK: Cycle
     if (loops.cycle && progress.step === 0 && progress.count === 0) {
       animations.push({
         ...loops.cycle,
@@ -180,7 +184,10 @@ const useScene = () => {
       })
     }
 
+    // MARK: Step
     if (loops.step && progress.count === 0) {
+      playSound.play('kalimba-e4')
+
       animations.push({
         ...loops.step,
         identifier: 'step',
@@ -191,7 +198,10 @@ const useScene = () => {
       })
     }
 
+    // MARK: Count
     if (loops.count) {
+      playSound.play('kalimba-e5')
+
       animations.push({
         ...loops.count,
         identifier: 'count',

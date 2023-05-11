@@ -8,13 +8,12 @@ import { countdown as countdownLabel, steps as stepsLabel } from '@/utilities/la
 const Header = () => {
   const appContext = useContext<Context>(AppContext)
 
-  // TODO: double check this logic
   const progressPercentage = () => {
     if (!appContext.isPlaying) {
       return 0
     }
 
-    if (appContext.progress.countdown !== 0) {
+    if (appContext.progress.countdown < TOTAL_COUNTDOWN_COUNTS) {
       return 0
     }
 
