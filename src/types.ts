@@ -1,4 +1,5 @@
 import { Container } from 'pixi.js'
+import { StaggerOptions, DirectionOptions, EasingOptions } from 'animejs'
 
 // TODO: figure out the proper types for setState functions
 export type Context = {
@@ -18,9 +19,11 @@ export type Settings = {
   cycles: number
   pattern: [number, number, number, number]
 
-  scene: 'aqua'
+  scene: Scenes
   background: [number, number, number]
 }
+
+export type ProgressEvent = 'runLoop' | 'resetLoop'
 
 export type Progress = {
   countdown: number
@@ -30,7 +33,48 @@ export type Progress = {
   count: number
 }
 
+export type Fractions = {
+  cycle: number
+  step: number
+  count: number
+  stagger: number
+}
+
+export type Scenes = 'debug' | 'aqua'
+
+export type SceneEvent = 'enterScene' | 'exitScene' | 'startScene' | 'stopScene' | 'idleScene' | 'runScene'
+
 export type Scene = {
-  update: () => void
-  render: Container
+  container: Container
+  resize: (width: number, height: number) => void
+  draw: () => void
+
+  enterScene: () => SceneAnimation
+  exitScene: () => SceneAnimation
+  startScene: () => SceneAnimation
+  stopScene: () => SceneAnimation
+  idleScene: () => SceneAnimation
+  runScene: () => ProgressAnimations
+
+  fractions: Fractions
+}
+
+// TODO: figure out true types for 'any'
+export type SceneAnimation = {
+  targets: any[]
+  transformations: any
+
+  identifier?: string
+
+  duration?: number
+  stagger?: number | StaggerOptions
+  loop?: boolean
+  direction?: DirectionOptions
+  easing?: EasingOptions
+}
+
+export type ProgressAnimations = {
+  cycle?: SceneAnimation
+  step?: SceneAnimation
+  count?: SceneAnimation
 }

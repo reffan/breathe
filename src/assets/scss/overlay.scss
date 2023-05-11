@@ -110,3 +110,22 @@
     }
   }
 }
+
+.scenes {
+  &-switcher {
+    display: flex;
+    justify-content: center;
+
+    list-style: none;
+  }
+
+  &-switch {
+    &--active {
+      opacity: initial;
+    }
+
+    &--inactive {
+      opacity: 0.6;
+    }
+  }
+}

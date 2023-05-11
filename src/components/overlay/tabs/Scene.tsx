@@ -1,20 +1,30 @@
 import React, { useContext } from 'react'
-import { Context, Settings } from '@/types'
+import { Context, Settings, Scenes } from '@/types'
 
 import { AppContext } from '@/AppContext'
+import { scenes } from '@/libraries/scenes'
 import { background } from '@/libraries/labels'
 
 const Scene = () => {
   const appContext = useContext<Context>(AppContext)
 
+  const changeScene = (scene: Scenes) => {
+    appContext.setSettings((currentSettings: Settings): Settings => {
+      return {
+        ...currentSettings,
+        scene: scene,
+      }
+    })
+  }
+
   // TODO: figure out the proper type for events
   const changeBackground = (e: any, step: number) => {
-    appContext.setSettings((previousSettings: Settings): Settings => {
-      const background = previousSettings.background
+    appContext.setSettings((currentSettings: Settings): Settings => {
+      const background = currentSettings.background
       background[step] = +e.target.value
 
       return {
-        ...previousSettings,
+        ...currentSettings,
         background,
       }
     })
@@ -24,6 +34,27 @@ const Scene = () => {
     <>
       <h2>Scene</h2>
       Current Scene: {appContext.settings.scene}
+      <div className='controls'>
+        <ul className='scenes-switcher'>
+          {scenes.map((scene, index) => {
+            return (
+              <li key={`scenes-switch-${index}`}>
+                <button
+                  type='button'
+                  onClick={() => {
+                    changeScene(scene.scene)
+                  }}
+                  className={
+                    appContext.settings.scene === scene.scene ? 'scenes-switch--active' : 'scenes-switch--inactive'
+                  }
+                >
+                  {scene.name}
+                </button>
+              </li>
+            )
+          })}
+        </ul>
+      </div>
       <div className='controls'>
         {background.map((valueLabel, index) => {
           return (

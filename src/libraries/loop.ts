@@ -1,87 +1,149 @@
 import { useContext, useEffect } from 'react'
-import { Context, Progress } from '@/types'
+import { TOTAL_COUNTDOWN, TOTAL_STEPS } from '@/libraries/constants'
+import { Context, Settings, Progress, Fractions } from '@/types'
 
 import { AppContext } from '@/AppContext'
-import { TOTAL_STEPS } from '@/libraries/constants'
-import { defaultProgress } from '@/libraries/defaults'
+import { subscribeEvent, unsubscribeEvent, dispatchEvent } from '@/libraries/events'
+import { defaultProgress, defaultSettings } from '@/libraries/defaults'
 
-// TODO: look up proper typing for a setTimeout
-let timeoutFn: any
+// MARK: Because the context doesn't stay reactive...
+let settings: Settings = defaultSettings
 let progress: Progress = defaultProgress
+let countDuration = 1000
+
+// TODO: look up proper type for setTimeout
+let loopTimeout: any
+
+let isSingleton = false
 
 const useLoop = () => {
   const appContext = useContext<Context>(AppContext)
+  settings = { ...appContext.settings }
   progress = { ...appContext.progress }
 
-  const countDuration = 1000 / appContext.settings.speed
+  useEffect(() => {
+    settings = { ...appContext.settings }
+    countDuration = 1000 / settings.speed
+
+    return () => {
+      return
+    }
+  }, [appContext.settings])
 
   useEffect(() => {
     progress = { ...appContext.progress }
+
+    return () => {
+      return
+    }
   }, [appContext.progress])
 
+  useEffect(() => {
+    if (!isSingleton) {
+      subscribeEvent('runLoop', () => {
+        runLoop()
+      })
+
+      subscribeEvent('resetLoop', () => {
+        resetLoop()
+      })
+    }
+
+    isSingleton = true
+
+    return () => {
+      unsubscribeEvent('runLoop', () => {
+        return
+      })
+
+      unsubscribeEvent('resetLoop', () => {
+        return
+      })
+    }
+  }, [])
+
   const advanceCountdown = () => {
-    // TODO: remember to double check this logic
-    appContext.setProgress((previousProgress: Progress): Progress => {
+    appContext.setProgress((currentProgress: Progress): Progress => {
       return {
-        ...previousProgress,
-        countdown: previousProgress.countdown - 1,
+        ...currentProgress,
+        countdown: currentProgress.countdown + 1,
       }
     })
   }
 
   const advanceCount = () => {
-    // TODO: remember to double check this logic
-    if (progress.cycle < appContext.settings.cycles) {
-      appContext.setProgress((previousProgress: Progress): Progress => {
-        const newProgress = { ...previousProgress }
+    // TODO: double check this logic
+    if (progress.cycle < settings.cycles) {
+      progress = advanceCountLogic()
 
-        // MARK: Advance the count
-        if (newProgress.count + 1 > appContext.settings.pattern[newProgress.step] - 1) {
-          newProgress.step++
-          newProgress.count = 0
-        } else {
-          newProgress.count++
-        }
-
-        // MARK: Advance to a non empty step
-        while (appContext.settings.pattern[newProgress.step] == 0 && newProgress.step < TOTAL_STEPS) {
-          newProgress.step++
-        }
-
-        // MARK: Advance the cycle
-        if (newProgress.step >= TOTAL_STEPS) {
-          newProgress.cycle++
-          newProgress.step = 0
-        }
-
-        return newProgress
+      appContext.setProgress((currentProgress: Progress): Progress => {
+        return advanceCountLogic(currentProgress)
       })
-    } else {
-      // TODO: how does this one get cleared?
-      setTimeout(() => {
-        appContext.setIsPlaying((): boolean => {
-          return false
-        })
 
-        resetLoop()
-      }, countDuration * 2)
+      // TODO: don't like how Scene is tightly coupled?
+      dispatchEvent('runScene')
+      return
     }
+
+    // TODO: don't like how Scene is tightly coupled?
+    dispatchEvent('stopScene')
+
+    // TODO: why does all of this happen so late?
+    // TODO: how does this one get cleared?
+    setTimeout(() => {
+      appContext.setIsPlaying((): boolean => {
+        return false
+      })
+
+      resetLoop()
+    }, countDuration * 2)
   }
 
-  const clearLoop = () => {
-    clearTimeout(timeoutFn)
+  // TODO: this is quite ugly, but happens because of late re-render
+  const advanceCountLogic = (currentProgress: Progress = progress): Progress => {
+    const updateProgress = { ...currentProgress }
+
+    // MARK: Advance the count
+    updateProgress.count++
+
+    // MARK: Advance the step
+    if (updateProgress.count > settings.pattern[updateProgress.step] - 1) {
+      updateProgress.step++
+
+      // MARK: Skip to next step if step has no counts in it
+      while (settings.pattern[updateProgress.step] == 0 && updateProgress.step < TOTAL_STEPS) {
+        updateProgress.step++
+      }
+
+      updateProgress.count = 0
+    }
+
+    // MARK: Advance the cycle
+    if (updateProgress.step >= TOTAL_STEPS) {
+      updateProgress.cycle++
+
+      updateProgress.step = 0
+    }
+
+    return updateProgress
   }
 
   const runLoop = () => {
-    if (progress.countdown > 0) {
+    if (progress.countdown < TOTAL_COUNTDOWN) {
       advanceCountdown()
-    } else {
+    }
+
+    if (progress.countdown >= TOTAL_COUNTDOWN - 1) {
       advanceCount()
     }
 
-    timeoutFn = setTimeout(() => {
+    loopTimeout = setTimeout(() => {
       runLoop()
     }, countDuration)
+  }
+
+  const clearLoop = () => {
+    clearTimeout(loopTimeout)
   }
 
   const resetLoop = () => {
@@ -90,26 +152,32 @@ const useLoop = () => {
     appContext.setProgress((): Progress => {
       return defaultProgress
     })
+  }
 
-    // TODO: advance to non empty step?
-    // TODO: remember to double check this logic
-    /*
-    appContext.setProgress((previousProgress: Progress): Progress => {
-      const newProgress = { ...previousProgress }
+  const loopDurations = (fractions: Fractions, safetyFraction = 0.96) => {
+    const countDuration = 1000 / settings.speed
+    const countsInStep = settings.pattern[progress.step]
+    const countsInCycle = settings.pattern.reduce((totalCounts, stepCounts) => {
+      return totalCounts + stepCounts
+    }, 0)
 
-      // MARK: Advance to a non empty step
-      while (appContext.settings.pattern[newProgress.step] == 0 && newProgress.step < TOTAL_STEPS) {
-        newProgress.step++
-      }
+    return {
+      cycle: countsInCycle * countDuration * fractions.cycle * safetyFraction,
+      step: countsInStep * countDuration * fractions.step * safetyFraction,
+      count: countDuration * fractions.count * safetyFraction,
+      stagger: countDuration * fractions.stagger * safetyFraction,
+    }
+  }
 
-      return newProgress
-    })
-    */
+  const loopProgress = () => {
+    return progress
   }
 
   return {
     runLoop,
     resetLoop,
+    loopDurations,
+    loopProgress,
   }
 }
 

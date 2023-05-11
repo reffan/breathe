@@ -1,10 +1,14 @@
-import { aqua } from '@/scenes/aqua'
+import { Scenes } from '@/types'
 
-const scenes = {
-  aqua: {
+const scenes: { name: string; scene: Scenes }[] = [
+  {
     name: 'Aqua',
-    scene: aqua,
+    scene: 'aqua',
   },
-}
+  {
+    name: 'DEBUG',
+    scene: 'debug',
+  },
+]
 
 export { scenes }

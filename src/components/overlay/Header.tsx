@@ -1,4 +1,5 @@
 import React, { useContext } from 'react'
+import { TOTAL_COUNTDOWN } from '@/libraries/constants'
 import { Context } from '@/types'
 
 import { AppContext } from '@/AppContext'
@@ -43,7 +44,7 @@ const Header = () => {
       return null
     }
 
-    if (appContext.progress.countdown === 0) {
+    if (appContext.progress.countdown >= TOTAL_COUNTDOWN) {
       return null
     }
 
@@ -55,7 +56,7 @@ const Header = () => {
       return null
     }
 
-    if (appContext.progress.countdown !== 0) {
+    if (appContext.progress.count === -1) {
       return null
     }
 

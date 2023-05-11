@@ -1,3 +1,4 @@
+// MARK: For testing purposes
 import { Container, Graphics } from 'pixi.js'
 import { SceneAnimation, ProgressAnimations, Scene } from '@/types'
 
@@ -5,41 +6,49 @@ const container = new Container()
 container.eventMode = 'none'
 container.interactiveChildren = false
 
-const ripples = new Graphics()
-container.addChild(ripples)
+const ripples = [new Graphics(), new Graphics(), new Graphics()]
 
 const initialState = {
   radius: 60,
-  opacity: 1,
+  scale: 1,
+  opacity: 0.84,
 }
 
 const sceneState = {
   ripples: [
     {
-      radius: 0,
-      opacity: 0,
+      scale: 0,
+      opacity: 1,
     },
     {
-      radius: 0,
-      opacity: 0,
+      scale: 0,
+      opacity: 1,
     },
     {
-      radius: 0,
-      opacity: 0,
+      scale: 0,
+      opacity: 1,
     },
   ],
 }
 
-const aqua = (): Scene => {
+ripples.forEach((ripple, index) => {
+  ripple.clear()
+  ripple.lineStyle(3 / (index + 1), '#FF0000')
+  ripple.drawCircle(0, 0, initialState.radius * initialState.scale)
+  ripple.closePath()
+
+  container.addChild(ripple)
+})
+
+const debug = (): Scene => {
   const enterScene = (): SceneAnimation => {
     return {
       targets: sceneState.ripples,
       transformations: {
-        radius: [0, initialState.radius],
+        scale: [0, initialState.scale],
         opacity: [0, initialState.opacity],
       },
-      duration: 1080,
-      stagger: 1080 * 0.18,
+      duration: 1800,
     }
   }
 
@@ -47,11 +56,10 @@ const aqua = (): Scene => {
     return {
       targets: sceneState.ripples,
       transformations: {
-        radius: 0,
+        scale: 0,
         opacity: 0,
       },
-      duration: 840,
-      stagger: 840 * 0.09,
+      duration: 900,
     }
   }
 
@@ -59,8 +67,7 @@ const aqua = (): Scene => {
     return {
       targets: sceneState.ripples,
       transformations: {
-        radius: 24,
-        opacity: initialState.opacity,
+        scale: 0.48,
       },
     }
   }
@@ -69,8 +76,7 @@ const aqua = (): Scene => {
     return {
       targets: sceneState.ripples,
       transformations: {
-        radius: 24,
-        opacity: initialState.opacity,
+        scale: 0.48,
       },
     }
   }
@@ -79,15 +85,13 @@ const aqua = (): Scene => {
     return {
       targets: sceneState.ripples,
       transformations: {
-        // opacity: [0.84, 1],
-        // radius: [20, 24],
-        radius: initialState.radius,
-        opacity: initialState.opacity,
+        opacity: [0.84, 1],
+        scale: [0.84, 1],
       },
-      // duration: 3600,
-      // loop: true,
-      // direction: 'alternate',
-      // easing: 'easeInOutSine',
+      duration: 3600,
+      loop: true,
+      direction: 'alternate',
+      easing: 'easeInOutSine',
     }
   }
 
@@ -96,16 +100,17 @@ const aqua = (): Scene => {
       // cycle: {
       //   targets: [],
       //   transformations: [],
+      //   //
       // },
       step: {
         targets: sceneState.ripples,
         transformations: [
           {
-            radius: 144,
+            scale: 2.4,
           },
           {},
           {
-            radius: 12,
+            scale: 0.24,
           },
           {},
         ],
@@ -114,11 +119,15 @@ const aqua = (): Scene => {
       count: {
         targets: sceneState.ripples,
         transformations: [
-          {},
+          {
+            opacity: [0.84, 1],
+          },
           {
             opacity: [0.72, 1],
           },
-          {},
+          {
+            opacity: [0.84, 1],
+          },
           {
             opacity: [0.72, 1],
           },
@@ -141,12 +150,9 @@ const aqua = (): Scene => {
   }
 
   const draw = () => {
-    ripples.clear()
-
-    sceneState.ripples.forEach((ripple, index) => {
-      ripples.lineStyle(3 / (index + 1), '#FFFFFF', ripple.opacity / (index + 1))
-      ripples.drawCircle(0, 0, ripple.radius)
-      ripples.closePath()
+    ripples.forEach((ripple, index) => {
+      ripple.scale.set(sceneState.ripples[index].scale, sceneState.ripples[index].scale)
+      ripple.alpha = sceneState.ripples[index].opacity / index
     })
   }
 
@@ -166,4 +172,4 @@ const aqua = (): Scene => {
   }
 }
 
-export default aqua
+export default debug
