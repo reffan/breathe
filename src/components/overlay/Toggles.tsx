@@ -3,7 +3,7 @@ import { Context } from '@/types'
 
 import { AppContext } from '@/AppContext'
 import { dispatchEvent } from '@/libraries/events'
-import { play as playLabel, mute as muteLabel } from '@/libraries/labels'
+import { play as playLabel, mute as muteLabel } from '@/utilities/labels'
 
 const Toggles = () => {
   const appContext = useContext<Context>(AppContext)
@@ -11,7 +11,7 @@ const Toggles = () => {
   const togglePlay = () => {
     if (!appContext.isPlaying) {
       dispatchEvent('startScene')
-      dispatchEvent('runLoop')
+      dispatchEvent('updateLoop')
     } else {
       dispatchEvent('stopScene')
       dispatchEvent('resetLoop')

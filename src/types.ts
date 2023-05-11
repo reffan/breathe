@@ -1,17 +1,17 @@
+import { Dispatch, SetStateAction } from 'react'
 import { Container } from 'pixi.js'
 import { StaggerOptions, DirectionOptions, EasingOptions } from 'animejs'
 
-// TODO: figure out the proper types for setState functions
 export type Context = {
   isPlaying: boolean
-  setIsPlaying: any
+  setIsPlaying: Dispatch<SetStateAction<boolean>>
   isMuted: boolean
-  setIsMuted: any
+  setIsMuted: Dispatch<SetStateAction<boolean>>
 
   settings: Settings
-  setSettings: any
+  setSettings: Dispatch<SetStateAction<Settings>>
   progress: Progress
-  setProgress: any
+  setProgress: Dispatch<SetStateAction<Progress>>
 }
 
 export type Settings = {
@@ -23,7 +23,7 @@ export type Settings = {
   background: [number, number, number]
 }
 
-export type ProgressEvent = 'runLoop' | 'resetLoop'
+export type ProgressEvent = 'updateLoop' | 'resetLoop'
 
 export type Progress = {
   countdown: number
@@ -33,34 +33,41 @@ export type Progress = {
   count: number
 }
 
-export type Fractions = {
+export type Scenes = 'debug' | 'aqua'
+
+export type SceneEvent = 'enterScene' | 'exitScene' | 'startScene' | 'stopScene' | 'idleScene' | 'loopScene'
+export type SceneAnimation =
+  | 'enterAnimation'
+  | 'exitAnimation'
+  | 'startAnimation'
+  | 'stopAnimation'
+  | 'idleAnimation'
+  | 'loopAnimation'
+
+export type SceneComponent = {
+  container: Container
+  resizeScene: (width: number, height: number) => void
+  drawScene: () => void
+
+  enterAnimation: () => Animation
+  exitAnimation: () => Animation
+  startAnimation: () => Animation
+  stopAnimation: () => Animation
+  idleAnimation: () => Animation
+  loopAnimation: () => LoopAnimations
+
+  durationFractions: DurationFractions
+}
+
+export type DurationFractions = {
   cycle: number
   step: number
   count: number
   stagger: number
 }
 
-export type Scenes = 'debug' | 'aqua'
-
-export type SceneEvent = 'enterScene' | 'exitScene' | 'startScene' | 'stopScene' | 'idleScene' | 'runScene'
-
-export type Scene = {
-  container: Container
-  resize: (width: number, height: number) => void
-  draw: () => void
-
-  enterScene: () => SceneAnimation
-  exitScene: () => SceneAnimation
-  startScene: () => SceneAnimation
-  stopScene: () => SceneAnimation
-  idleScene: () => SceneAnimation
-  runScene: () => ProgressAnimations
-
-  fractions: Fractions
-}
-
-// TODO: figure out true types for 'any'
-export type SceneAnimation = {
+// TODO: figure out the type for 'any' targets and transformations
+export type Animation = {
   targets: any[]
   transformations: any
 
@@ -73,8 +80,8 @@ export type SceneAnimation = {
   easing?: EasingOptions
 }
 
-export type ProgressAnimations = {
-  cycle?: SceneAnimation
-  step?: SceneAnimation
-  count?: SceneAnimation
+export type LoopAnimations = {
+  cycle?: Animation
+  step?: Animation
+  count?: Animation
 }

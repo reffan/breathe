@@ -1,4 +1,4 @@
-import React, { useContext } from 'react'
+import React, { ChangeEvent, useContext } from 'react'
 import { Context, Settings } from '@/types'
 
 import { AppContext } from '@/AppContext'
@@ -6,22 +6,20 @@ import { AppContext } from '@/AppContext'
 const Speed = () => {
   const appContext = useContext<Context>(AppContext)
 
-  // TODO: figure out the proper type for events
-  const changeSpeed = (e: any) => {
+  const changeSpeed = (event: ChangeEvent<HTMLInputElement>) => {
     appContext.setSettings((currentSettings: Settings): Settings => {
       return {
         ...currentSettings,
-        speed: +e.target.value,
+        speed: +event.target.value,
       }
     })
   }
 
-  // TODO: figure out the proper type for events
-  const changeCycles = (e: any) => {
+  const changeCycles = (event: ChangeEvent<HTMLInputElement>) => {
     appContext.setSettings((currentSettings: Settings): Settings => {
       return {
         ...currentSettings,
-        cycles: +e.target.value,
+        cycles: +event.target.value,
       }
     })
   }

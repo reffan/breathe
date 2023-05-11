@@ -8,6 +8,7 @@ import About from './tabs/About'
 
 // TODO: extract this?
 const tabs = [
+  // DEBUG:
   { name: 'DEBUG', component: Debug },
   { name: 'Speed', component: Speed },
   { name: 'Pattern', component: Pattern },

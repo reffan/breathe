@@ -1,5 +1,5 @@
 import { Container, Graphics } from 'pixi.js'
-import { SceneAnimation, ProgressAnimations, Scene } from '@/types'
+import { Animation, LoopAnimations, SceneComponent } from '@/types'
 
 const container = new Container()
 container.eventMode = 'none'
@@ -30,8 +30,8 @@ const sceneState = {
   ],
 }
 
-const aqua = (): Scene => {
-  const enterScene = (): SceneAnimation => {
+const aqua = (): SceneComponent => {
+  const enterAnimation = (): Animation => {
     return {
       targets: sceneState.ripples,
       transformations: {
@@ -43,7 +43,7 @@ const aqua = (): Scene => {
     }
   }
 
-  const exitScene = (): SceneAnimation => {
+  const exitAnimation = (): Animation => {
     return {
       targets: sceneState.ripples,
       transformations: {
@@ -55,7 +55,7 @@ const aqua = (): Scene => {
     }
   }
 
-  const startScene = (): SceneAnimation => {
+  const startAnimation = (): Animation => {
     return {
       targets: sceneState.ripples,
       transformations: {
@@ -65,7 +65,7 @@ const aqua = (): Scene => {
     }
   }
 
-  const stopScene = (): SceneAnimation => {
+  const stopAnimation = (): Animation => {
     return {
       targets: sceneState.ripples,
       transformations: {
@@ -75,7 +75,7 @@ const aqua = (): Scene => {
     }
   }
 
-  const idleScene = (): SceneAnimation => {
+  const idleAnimation = (): Animation => {
     return {
       targets: sceneState.ripples,
       transformations: {
@@ -91,7 +91,7 @@ const aqua = (): Scene => {
     }
   }
 
-  const runScene = (): ProgressAnimations => {
+  const loopAnimation = (): LoopAnimations => {
     return {
       // cycle: {
       //   targets: [],
@@ -128,19 +128,19 @@ const aqua = (): Scene => {
     }
   }
 
-  const fractions = {
+  const durationFractions = {
     cycle: 1,
     step: 1,
     count: 0.72,
     stagger: 0.18,
   }
 
-  const resize = (width: number, height: number) => {
+  const resizeScene = (width: number, height: number) => {
     container.position.x = width / 2
     container.position.y = height / 2
   }
 
-  const draw = () => {
+  const drawScene = () => {
     ripples.clear()
 
     sceneState.ripples.forEach((ripple, index) => {
@@ -152,17 +152,17 @@ const aqua = (): Scene => {
 
   return {
     container,
-    resize,
-    draw,
+    resizeScene,
+    drawScene,
 
-    enterScene,
-    exitScene,
-    startScene,
-    stopScene,
-    idleScene,
-    runScene,
+    enterAnimation,
+    exitAnimation,
+    startAnimation,
+    stopAnimation,
+    idleAnimation,
+    loopAnimation,
 
-    fractions,
+    durationFractions,
   }
 }
 

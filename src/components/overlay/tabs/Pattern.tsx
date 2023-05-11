@@ -1,17 +1,16 @@
-import React, { useContext } from 'react'
+import React, { ChangeEvent, useContext } from 'react'
 import { Context, Settings } from '@/types'
 
 import { AppContext } from '@/AppContext'
-import { steps } from '@/libraries/labels'
+import { steps } from '@/utilities/labels'
 
 const Pattern = () => {
   const appContext = useContext<Context>(AppContext)
 
-  // TODO: figure out the proper type for events
-  const changePattern = (e: any, step: number) => {
+  const changePattern = (event: ChangeEvent<HTMLInputElement>, step: number) => {
     appContext.setSettings((currentSettings: Settings): Settings => {
       const pattern = currentSettings.pattern
-      pattern[step] = +e.target.value
+      pattern[step] = +event.target.value
 
       return {
         ...currentSettings,

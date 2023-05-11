@@ -1,4 +1,4 @@
-import { Settings, Progress, SceneAnimation } from '@/types'
+import { Settings, Progress, Animation } from '@/types'
 
 const defaultSettings: Settings = {
   speed: 1,
@@ -17,7 +17,7 @@ const defaultProgress: Progress = {
   count: -1,
 }
 
-const defaultAnimation: Partial<SceneAnimation> = {
+const defaultAnimation: Partial<Animation> = {
   duration: 1000,
   stagger: 0,
   loop: false,

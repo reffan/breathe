@@ -1,19 +1,19 @@
 import { useContext, useEffect } from 'react'
 import { ICanvas, IRenderer, IRendererOptionsAuto, autoDetectRenderer } from 'pixi.js'
 import anime from 'animejs'
-import { ENTER_SCENE_TIMEOUT } from '@/libraries/constants'
-import { Context, Scenes, Scene, SceneAnimation, SceneEvent } from '@/types'
+import { Context, Scenes, SceneComponent, Animation, SceneAnimation } from '@/types'
 
 import { AppContext } from '@/AppContext'
 import { useLoop } from '@/libraries/loop'
 import { subscribeEvent, unsubscribeEvent, dispatchEvent } from '@/libraries/events'
-import { defaultAnimation, defaultSettings } from '@/libraries/defaults'
+import { ENTER_SCENE_DELAY } from '@/utilities/constants'
+import { defaultAnimation, defaultSettings } from '@/utilities/defaults'
 
 // MARK: Because the context doesn't stay reactive...
 let currentScene: Scenes = defaultSettings.scene
 
 let renderer: IRenderer<ICanvas>
-let scene: () => Scene
+let scene: () => SceneComponent
 
 // TODO: not sure if necessary?
 let canvasWidth: number
@@ -47,8 +47,8 @@ const useScene = () => {
         idleScene()
       })
 
-      subscribeEvent('runScene', () => {
-        runScene()
+      subscribeEvent('loopScene', () => {
+        loopScene()
       })
     }
 
@@ -58,7 +58,6 @@ const useScene = () => {
       currentScene = defaultSettings.scene
 
       const setScene = async () => {
-        // TODO: get vite ignore working
         const sceneComponent = await import(`../scenes/${currentScene}.ts`)
         scene = sceneComponent.default
       }
@@ -87,7 +86,7 @@ const useScene = () => {
         return
       })
 
-      unsubscribeEvent('runScene', () => {
+      unsubscribeEvent('loopScene', () => {
         return
       })
     }
@@ -130,69 +129,47 @@ const useScene = () => {
     canvasWidth = window.innerWidth
     canvasHeight = window.innerHeight
 
-    scene().resize(canvasWidth, canvasHeight)
+    scene().resizeScene(canvasWidth, canvasHeight)
     renderer.resize(canvasWidth, canvasHeight)
   }
 
-  // TODO: rename this
-  const transitionScene = async (identifier: string | SceneEvent) => {
-    try {
-      // TODO: uhh?
-      const transitionScene = (scene() as any)[identifier]()
-
-      transitionScene.targets.forEach((target: any[]) => {
-        anime.remove(target)
-      })
-
-      await animateScene([
-        {
-          ...transitionScene,
-          identifier,
-        },
-      ])
-    } catch (error) {
-      // MARK: Scene has not been set yet
-      // console.warn(error)
-    }
-  }
-
   const enterScene = async () => {
-    scene().resize(canvasWidth, canvasHeight)
-    await transitionScene('enterScene')
+    scene().resizeScene(canvasWidth, canvasHeight)
+    await transitionAnimation('enterAnimation')
 
     dispatchEvent('idleScene')
   }
 
   const exitScene = async () => {
-    await transitionScene('exitScene')
+    await transitionAnimation('exitAnimation')
 
-    const sceneComponent = await import(`../scenes/${currentScene}`)
+    const sceneComponent = await import(`../scenes/${currentScene}.ts`)
     scene = sceneComponent.default
 
     setTimeout(() => {
       dispatchEvent('enterScene')
-    }, ENTER_SCENE_TIMEOUT)
+    }, ENTER_SCENE_DELAY)
   }
 
   const startScene = async () => {
-    await transitionScene('startScene')
+    await transitionAnimation('startAnimation')
   }
 
   const stopScene = async () => {
-    await transitionScene('stopScene')
+    await transitionAnimation('stopAnimation')
     dispatchEvent('idleScene')
   }
 
   const idleScene = async () => {
-    await transitionScene('idleScene')
+    await transitionAnimation('idleAnimation')
   }
 
-  const runScene = async () => {
-    const animations: SceneAnimation[] = []
-    const loops = scene()['runScene']()
+  const loopScene = async () => {
+    const animations: Animation[] = []
+    const loops = scene()['loopAnimation']()
 
     const progress = loopProgress()
-    const durations = loopDurations(scene().fractions)
+    const durations = loopDurations(scene().durationFractions)
 
     if (loops.cycle && progress.step === 0 && progress.count === 0) {
       animations.push({
@@ -223,18 +200,39 @@ const useScene = () => {
       })
     }
 
-    // await animateScene(animations)
     animateScene(animations)
   }
 
-  const animateScene = async (animations: SceneAnimation[]) => {
+  const transitionAnimation = async (identifier: SceneAnimation) => {
+    try {
+      // TODO: uhh?
+      const transitionAnimation = (scene() as any)[identifier]()
+
+      // TODO: figure out the type for 'any' target
+      transitionAnimation.targets.forEach((target: any[]) => {
+        anime.remove(target)
+      })
+
+      await animateScene([
+        {
+          ...transitionAnimation,
+          identifier,
+        },
+      ])
+    } catch (error) {
+      // MARK: Scene has not been set yet
+      // console.warn(error)
+    }
+  }
+
+  const animateScene = async (animations: Animation[]) => {
     // DEBUG:
     console.debug({ animations })
     console.debug({ running: anime.running })
 
     const animationPromises: Promise<void>[] = []
 
-    animations.forEach((animation: SceneAnimation) => {
+    animations.forEach((animation: Animation) => {
       animationPromises.push(
         anime({
           targets: animation.targets,
@@ -259,7 +257,7 @@ const useScene = () => {
       return
     }
 
-    scene().draw()
+    scene().drawScene()
     renderer.render(scene().container)
   }
 

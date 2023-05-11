@@ -1,6 +1,6 @@
 // MARK: For testing purposes
 import { Container, Graphics } from 'pixi.js'
-import { SceneAnimation, ProgressAnimations, Scene } from '@/types'
+import { Animation, LoopAnimations, SceneComponent } from '@/types'
 
 const container = new Container()
 container.eventMode = 'none'
@@ -40,8 +40,8 @@ ripples.forEach((ripple, index) => {
   container.addChild(ripple)
 })
 
-const debug = (): Scene => {
-  const enterScene = (): SceneAnimation => {
+const debug = (): SceneComponent => {
+  const enterAnimation = (): Animation => {
     return {
       targets: sceneState.ripples,
       transformations: {
@@ -52,7 +52,7 @@ const debug = (): Scene => {
     }
   }
 
-  const exitScene = (): SceneAnimation => {
+  const exitAnimation = (): Animation => {
     return {
       targets: sceneState.ripples,
       transformations: {
@@ -63,7 +63,7 @@ const debug = (): Scene => {
     }
   }
 
-  const startScene = (): SceneAnimation => {
+  const startAnimation = (): Animation => {
     return {
       targets: sceneState.ripples,
       transformations: {
@@ -72,7 +72,7 @@ const debug = (): Scene => {
     }
   }
 
-  const stopScene = (): SceneAnimation => {
+  const stopAnimation = (): Animation => {
     return {
       targets: sceneState.ripples,
       transformations: {
@@ -81,7 +81,7 @@ const debug = (): Scene => {
     }
   }
 
-  const idleScene = (): SceneAnimation => {
+  const idleAnimation = (): Animation => {
     return {
       targets: sceneState.ripples,
       transformations: {
@@ -95,7 +95,7 @@ const debug = (): Scene => {
     }
   }
 
-  const runScene = (): ProgressAnimations => {
+  const loopAnimation = (): LoopAnimations => {
     return {
       // cycle: {
       //   targets: [],
@@ -137,19 +137,19 @@ const debug = (): Scene => {
     }
   }
 
-  const fractions = {
+  const durationFractions = {
     cycle: 1,
     step: 1,
     count: 0.72,
     stagger: 0.18,
   }
 
-  const resize = (width: number, height: number) => {
+  const resizeScene = (width: number, height: number) => {
     container.position.x = width / 2
     container.position.y = height / 2
   }
 
-  const draw = () => {
+  const drawScene = () => {
     ripples.forEach((ripple, index) => {
       ripple.scale.set(sceneState.ripples[index].scale, sceneState.ripples[index].scale)
       ripple.alpha = sceneState.ripples[index].opacity / index
@@ -158,17 +158,17 @@ const debug = (): Scene => {
 
   return {
     container,
-    resize,
-    draw,
+    resizeScene,
+    drawScene,
 
-    enterScene,
-    exitScene,
-    startScene,
-    stopScene,
-    idleScene,
-    runScene,
+    enterAnimation,
+    exitAnimation,
+    startAnimation,
+    stopAnimation,
+    idleAnimation,
+    loopAnimation,
 
-    fractions,
+    durationFractions,
   }
 }
 

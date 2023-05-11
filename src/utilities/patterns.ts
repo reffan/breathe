@@ -1,4 +1,4 @@
-const patterns = [
+const patterns: { name: string; pattern: [number, number, number, number] }[] = [
   {
     name: 'Water',
     pattern: [4, 0, 4, 0],

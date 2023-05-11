@@ -1,13 +1,14 @@
 import { Scenes } from '@/types'
 
 const scenes: { name: string; scene: Scenes }[] = [
-  {
-    name: 'Aqua',
-    scene: 'aqua',
-  },
+  // DEBUG:
   {
     name: 'DEBUG',
     scene: 'debug',
+  },
+  {
+    name: 'Aqua',
+    scene: 'aqua',
   },
 ]
 

@@ -1,9 +1,9 @@
 import React, { ReactNode, createContext, useState } from 'react'
 import { Context, Settings, Progress } from '@/types'
 
-import { defaultSettings, defaultProgress } from '@/libraries/defaults'
+import { defaultSettings, defaultProgress } from '@/utilities/defaults'
 
-// TODO: figure out the proper type for default context
+// TODO: figure out the type for default context
 const AppContext = createContext({} as Context | any)
 
 const AppContextProvider = ({ children }: { children: ReactNode }) => {

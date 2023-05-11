@@ -1,9 +1,9 @@
-import React, { useContext } from 'react'
+import React, { ChangeEvent, useContext } from 'react'
 import { Context, Settings, Scenes } from '@/types'
 
 import { AppContext } from '@/AppContext'
-import { scenes } from '@/libraries/scenes'
-import { background } from '@/libraries/labels'
+import { scenes } from '@/utilities/scenes'
+import { background } from '@/utilities/labels'
 
 const Scene = () => {
   const appContext = useContext<Context>(AppContext)
@@ -17,11 +17,10 @@ const Scene = () => {
     })
   }
 
-  // TODO: figure out the proper type for events
-  const changeBackground = (e: any, step: number) => {
+  const changeBackground = (event: ChangeEvent<HTMLInputElement>, step: number) => {
     appContext.setSettings((currentSettings: Settings): Settings => {
       const background = currentSettings.background
-      background[step] = +e.target.value
+      background[step] = +event.target.value
 
       return {
         ...currentSettings,

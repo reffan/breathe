@@ -1,18 +1,17 @@
 import { useContext, useEffect } from 'react'
-import { TOTAL_COUNTDOWN, TOTAL_STEPS } from '@/libraries/constants'
-import { Context, Settings, Progress, Fractions } from '@/types'
+import { Context, Settings, Progress, DurationFractions } from '@/types'
 
 import { AppContext } from '@/AppContext'
 import { subscribeEvent, unsubscribeEvent, dispatchEvent } from '@/libraries/events'
-import { defaultProgress, defaultSettings } from '@/libraries/defaults'
+import { TOTAL_COUNTDOWN_COUNTS, TOTAL_PATTERN_STEPS } from '@/utilities/constants'
+import { defaultProgress, defaultSettings } from '@/utilities/defaults'
 
 // MARK: Because the context doesn't stay reactive...
 let settings: Settings = defaultSettings
 let progress: Progress = defaultProgress
 let countDuration = 1000
 
-// TODO: look up proper type for setTimeout
-let loopTimeout: any
+let loopTimeout: ReturnType<typeof setTimeout>
 
 let isSingleton = false
 
@@ -40,8 +39,8 @@ const useLoop = () => {
 
   useEffect(() => {
     if (!isSingleton) {
-      subscribeEvent('runLoop', () => {
-        runLoop()
+      subscribeEvent('updateLoop', () => {
+        updateLoop()
       })
 
       subscribeEvent('resetLoop', () => {
@@ -52,7 +51,7 @@ const useLoop = () => {
     isSingleton = true
 
     return () => {
-      unsubscribeEvent('runLoop', () => {
+      unsubscribeEvent('updateLoop', () => {
         return
       })
 
@@ -81,7 +80,7 @@ const useLoop = () => {
       })
 
       // TODO: don't like how Scene is tightly coupled?
-      dispatchEvent('runScene')
+      dispatchEvent('loopScene')
       return
     }
 
@@ -111,7 +110,7 @@ const useLoop = () => {
       updateProgress.step++
 
       // MARK: Skip to next step if step has no counts in it
-      while (settings.pattern[updateProgress.step] == 0 && updateProgress.step < TOTAL_STEPS) {
+      while (settings.pattern[updateProgress.step] == 0 && updateProgress.step < TOTAL_PATTERN_STEPS) {
         updateProgress.step++
       }
 
@@ -119,7 +118,7 @@ const useLoop = () => {
     }
 
     // MARK: Advance the cycle
-    if (updateProgress.step >= TOTAL_STEPS) {
+    if (updateProgress.step >= TOTAL_PATTERN_STEPS) {
       updateProgress.cycle++
 
       updateProgress.step = 0
@@ -128,17 +127,17 @@ const useLoop = () => {
     return updateProgress
   }
 
-  const runLoop = () => {
-    if (progress.countdown < TOTAL_COUNTDOWN) {
+  const updateLoop = () => {
+    if (progress.countdown < TOTAL_COUNTDOWN_COUNTS) {
       advanceCountdown()
     }
 
-    if (progress.countdown >= TOTAL_COUNTDOWN - 1) {
+    if (progress.countdown >= TOTAL_COUNTDOWN_COUNTS - 1) {
       advanceCount()
     }
 
     loopTimeout = setTimeout(() => {
-      runLoop()
+      updateLoop()
     }, countDuration)
   }
 
@@ -154,7 +153,7 @@ const useLoop = () => {
     })
   }
 
-  const loopDurations = (fractions: Fractions, safetyFraction = 0.96) => {
+  const loopDurations = (durationFractions: DurationFractions, safetyFraction = 0.96) => {
     const countDuration = 1000 / settings.speed
     const countsInStep = settings.pattern[progress.step]
     const countsInCycle = settings.pattern.reduce((totalCounts, stepCounts) => {
@@ -162,10 +161,10 @@ const useLoop = () => {
     }, 0)
 
     return {
-      cycle: countsInCycle * countDuration * fractions.cycle * safetyFraction,
-      step: countsInStep * countDuration * fractions.step * safetyFraction,
-      count: countDuration * fractions.count * safetyFraction,
-      stagger: countDuration * fractions.stagger * safetyFraction,
+      cycle: countsInCycle * countDuration * durationFractions.cycle * safetyFraction,
+      step: countsInStep * countDuration * durationFractions.step * safetyFraction,
+      count: countDuration * durationFractions.count * safetyFraction,
+      stagger: countDuration * durationFractions.stagger * safetyFraction,
     }
   }
 
@@ -174,7 +173,7 @@ const useLoop = () => {
   }
 
   return {
-    runLoop,
+    updateLoop,
     resetLoop,
     loopDurations,
     loopProgress,

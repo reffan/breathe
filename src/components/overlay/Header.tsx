@@ -1,9 +1,9 @@
 import React, { useContext } from 'react'
-import { TOTAL_COUNTDOWN } from '@/libraries/constants'
 import { Context } from '@/types'
 
 import { AppContext } from '@/AppContext'
-import { countdown as countdownLabel, steps as stepsLabel } from '@/libraries/labels'
+import { TOTAL_COUNTDOWN_COUNTS } from '@/utilities/constants'
+import { countdown as countdownLabel, steps as stepsLabel } from '@/utilities/labels'
 
 const Header = () => {
   const appContext = useContext<Context>(AppContext)
@@ -44,7 +44,7 @@ const Header = () => {
       return null
     }
 
-    if (appContext.progress.countdown >= TOTAL_COUNTDOWN) {
+    if (appContext.progress.countdown >= TOTAL_COUNTDOWN_COUNTS) {
       return null
     }
 
