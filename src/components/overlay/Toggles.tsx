@@ -30,11 +30,17 @@ const Toggles = () => {
 
   return (
     <>
-      <button type='button' onClick={togglePlay}>
-        {playLabel[+appContext.isPlaying]}
+      <button type='button' onClick={togglePlay} className='toggles-button'>
+        <div className='toggles-indicator'>
+          <span className={['icon', !appContext.isPlaying ? 'start' : 'stop'].join(' ')} />
+        </div>
+        <span className='toggles-text'>{playLabel[+appContext.isPlaying]}</span>
       </button>
-      <button type='button' onClick={toggleMute}>
-        {muteLabel[+appContext.isMuted]}
+      <button type='button' onClick={toggleMute} className='toggles-button'>
+        <div className='toggles-indicator'>
+          <span className={['icon', !appContext.isMuted ? 'mute' : 'unmute'].join(' ')} />
+        </div>
+        <span className='toggles-text'>{muteLabel[+appContext.isMuted]}</span>
       </button>
     </>
   )

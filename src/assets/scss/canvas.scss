@@ -1,10 +1,12 @@
+@use './variables.scss';
+
 #canvas {
   display: flex;
   justify-content: center;
   align-items: center;
 
   width: 100%;
-  min-height: 100dvh;
+  min-height: variables.$size_min-height;
 
   canvas {
     width: 100%;

@@ -1,1 +1,27 @@
-$overlay-width: 36%;
+// MARK: Colors
+$color_foreground: white;
+$color_background: black;
+
+$color_text: hsla(0%, 0, 100, 1);
+$color_subtitle: hsla(0%, 0, 100, 0.6);
+
+$color_progress-bar: hsla(0%, 0, 100, 0.12);
+$color_progress-indicator: hsla(0%, 0, 100, 1);
+
+$color_tabs: hsla(0%, 0, 0, 0.24);
+$color_tabs-switcher: hsla(0%, 0, 0, 0.06);
+$color_tabs-switch--inactive: transparent;
+$color_tabs-switch--active: hsla(0%, 0, 0, 0.12);
+$color_tabs-switch--hover: hsla(0%, 0, 0, 0.24);
+
+$color_toggles-indicator: hsla(0%, 0, 100, 0.12);
+$color_toggles-indicator--hover: hsla(0%, 0, 100, 0.24);
+
+// MARK: Sizes
+$size_min-height: 100dvh;
+$size_overlay-max-width: 36rem;
+$size_border-radius: 0.5rem;
+
+// MARK: Transitions
+$transition_is-playing: opacity 1.8s ease;
+$transition_progress-indicator: width 0.48s ease-out;

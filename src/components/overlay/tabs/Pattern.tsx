@@ -22,7 +22,7 @@ const Pattern = () => {
   return (
     <>
       <h2>Breathing Pattern</h2>
-      Current Pattern: {appContext.settings.pattern.join(' / ')}
+      <span className='subtitle'>Current Pattern: {appContext.settings.pattern.join(' / ')}</span>
       <div className='controls'>
         {steps.map((stepLabel, index) => {
           return (
@@ -31,7 +31,7 @@ const Pattern = () => {
                 <div className='layout-column'>
                   <label htmlFor={`pattern-${index}`}>{stepLabel}</label>
                 </div>
-                <div className='layout-column--align-end'>
+                <div className='layout-column align-end'>
                   <span>{appContext.settings.pattern[index]}</span>
                 </div>
               </div>

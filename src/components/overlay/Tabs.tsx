@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 
-import Debug from './tabs/Debug'
+// import Debug from './tabs/Debug'
 import Speed from './tabs/Speed'
 import Pattern from './tabs/Pattern'
 import Scene from './tabs/Scene'
@@ -9,7 +9,7 @@ import About from './tabs/About'
 // TODO: extract this?
 const tabs = [
   // DEBUG:
-  { name: 'DEBUG', component: Debug },
+  // { name: 'DEBUG', component: Debug },
   { name: 'Speed', component: Speed },
   { name: 'Pattern', component: Pattern },
   { name: 'Scene', component: Scene },
@@ -30,7 +30,11 @@ const Tabs = () => {
       <ul className='tabs-viewer'>
         {tabs.map((tab, index) => {
           return (
-            <li key={`tabs-view-${index}`} className={currentTab === index ? 'tabs-view--open' : 'tabs-view--closed'}>
+            <li
+              key={`tabs-view-${index}`}
+              // prettier-ignore
+              className={['tabs-view', currentTab === index ? 'open' : 'closed'].join(' ')}
+            >
               <tab.component />
             </li>
           )
@@ -45,7 +49,8 @@ const Tabs = () => {
                 onClick={() => {
                   switchTab(index)
                 }}
-                className={currentTab === index ? 'tabs-switch--active' : 'tabs-switch--inactive'}
+                // prettier-ignore
+                className={['tabs-switch', currentTab === index ? 'active' : 'inactive'].join(' ')}
               >
                 {tab.name}
               </button>

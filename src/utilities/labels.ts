@@ -1,4 +1,4 @@
-const play = ['Play', 'Stop']
+const play = ['Start', 'Stop']
 const mute = ['Mute', 'Unmute']
 
 const countdown = ['3', '2', '1', 'Breathe...']

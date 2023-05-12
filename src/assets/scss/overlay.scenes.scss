@@ -1,0 +1,28 @@
+@use './variables.scss';
+
+.scenes {
+  &-switcher {
+    display: flex;
+    justify-content: center;
+
+    list-style: none;
+
+    > li {
+      flex: 1;
+    }
+  }
+
+  &-switch {
+    appearance: none;
+
+    width: 100%;
+
+    &.active {
+      opacity: initial;
+    }
+
+    &.inactive {
+      opacity: 0.6;
+    }
+  }
+}

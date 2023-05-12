@@ -1,12 +1,16 @@
-import React from 'react'
+import React, { useContext } from 'react'
+import { Context } from '@/types'
 
+import { AppContext } from '@/AppContext'
 import Header from '@/components/overlay/Header'
 import Tabs from '@/components/overlay/Tabs'
 import Toggles from '@/components/overlay/Toggles'
 
 const Overlay = () => {
+  const appContext = useContext<Context>(AppContext)
+
   return (
-    <div id='overlay'>
+    <div id='overlay' className={appContext.isPlaying ? 'is-playing' : undefined}>
       <div className='overlay-header'>
         <Header />
       </div>

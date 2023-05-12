@@ -33,16 +33,14 @@ export type Progress = {
   count: number
 }
 
+// prettier-ignore
 export type Scenes = 'debug' | 'aqua'
 
+// prettier-ignore
 export type SceneEvent = 'enterScene' | 'exitScene' | 'startScene' | 'stopScene' | 'idleScene' | 'loopScene'
-export type SceneAnimation =
-  | 'enterAnimation'
-  | 'exitAnimation'
-  | 'startAnimation'
-  | 'stopAnimation'
-  | 'idleAnimation'
-  | 'loopAnimation'
+
+// prettier-ignore
+export type SceneAnimation = 'enterAnimation' | 'exitAnimation' | 'startAnimation' | 'stopAnimation' | 'idleAnimation' | 'loopAnimation'
 
 export type SceneComponent = {
   container: Container

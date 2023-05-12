@@ -1,0 +1,70 @@
+@use './variables.scss';
+
+.tabs {
+  &-viewer {
+    display: flex;
+
+    padding: 2rem;
+
+    background-color: variables.$color_tabs;
+    border-radius: variables.$size_border-radius;
+
+    list-style: none;
+  }
+
+  &-view {
+    &.open {
+      display: flex;
+      flex-direction: column;
+
+      width: 100%;
+    }
+
+    &.closed {
+      display: none;
+    }
+  }
+
+  &-switcher {
+    display: flex;
+    justify-content: center;
+
+    margin-top: 1rem;
+
+    background-color: variables.$color_tabs-switcher;
+    border-radius: variables.$size_border-radius;
+
+    list-style: none;
+
+    > li {
+      flex: 1;
+    }
+  }
+
+  &-switch {
+    appearance: none;
+
+    padding: 1rem 2rem;
+
+    width: 100%;
+
+    color: variables.$color_text;
+
+    border: none;
+    border-radius: variables.$size_border-radius;
+
+    cursor: pointer;
+
+    &.active {
+      background-color: variables.$color_tabs-switch--active;
+    }
+
+    &.inactive {
+      background-color: variables.$color_tabs-switch--inactive;
+    }
+
+    &:hover {
+      background-color: variables.$color_tabs-switch--hover;
+    }
+  }
+}

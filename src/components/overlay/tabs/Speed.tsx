@@ -32,20 +32,20 @@ const Speed = () => {
     const countDuration = 1 / appContext.settings.speed
     const totalDuration = Math.round((appContext.settings.cycles * countsInCycle * countDuration) / 60)
 
-    return `${totalDuration} min${totalDuration != 1 ? 's' : ''}`
+    return `${totalDuration} min${totalDuration != 1 ? 's' : ''}.`
   }
 
   return (
     <>
       <h2>Speed & Duration</h2>
-      Current Duration: {durationText()}
+      <span className='subtitle'>Current Duration: {durationText()}</span>
       <div className='controls'>
         <div className='controls-range'>
           <div className='layout-row'>
             <div className='layout-column'>
               <label htmlFor='speed'>Speed</label>
             </div>
-            <div className='layout-column--align-end'>
+            <div className='layout-column align-end'>
               <span>
                 {appContext.settings.speed}
                 {/* {'x'} */}
@@ -68,7 +68,7 @@ const Speed = () => {
             <div className='layout-column'>
               <label htmlFor='cycles'>Cycles</label>
             </div>
-            <div className='layout-column--align-end'>
+            <div className='layout-column align-end'>
               <span>
                 {appContext.settings.cycles}
                 {/* {'x'} */}

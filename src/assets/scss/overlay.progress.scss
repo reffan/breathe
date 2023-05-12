@@ -1,0 +1,28 @@
+@use './variables.scss';
+
+.progress {
+  &-bar {
+    margin: 1rem 0 1.5rem 0;
+
+    width: 60%;
+    height: 0.25rem;
+    max-width: 16rem;
+
+    background-color: variables.$color_progress-bar;
+
+    border-radius: 1rem;
+  }
+
+  &-indicator {
+    height: 100%;
+
+    background-color: variables.$color_progress-indicator;
+
+    border-radius: 1rem;
+
+    transition: variables.$transition_progress-indicator;
+  }
+
+  &-text {
+  }
+}

@@ -11,121 +11,71 @@
   right: 0;
 
   width: 100%;
-  min-height: 100dvh;
+  min-height: variables.$size_min-height;
 }
 
 .overlay {
   &-header {
     margin: 0 auto;
-    padding: 2rem;
+    padding: 1rem 3rem;
 
-    width: variables.$overlay-width;
-  }
+    max-width: variables.$size_overlay-max-width;
 
-  &-branding {
-    display: flex;
-    justify-content: center;
-  }
+    > .overlay-branding {
+      display: flex;
+      justify-content: center;
 
-  &-progress {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+      transition: variables.$transition_is-playing;
+    }
+
+    > .overlay-progress {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
   }
 
   &-footer {
     margin: 0 auto;
-    padding: 2rem;
+    padding: 1rem 3rem;
 
-    width: variables.$overlay-width;
-  }
+    max-width: variables.$size_overlay-max-width;
 
-  &-tabs {
-  }
-
-  &-toggles {
-    display: flex;
-    justify-content: center;
-  }
-}
-
-.progress {
-  &-bar {
-    margin: 1rem 0 1.5rem 0;
-
-    width: 60%;
-    height: 0.25rem;
-    max-width: 192px;
-
-    background-color: hsla(0, 0%, 100%, 0.12);
-
-    border-radius: 1rem;
-  }
-
-  &-indicator {
-    height: 100%;
-
-    background-color: hsla(0, 0%, 100%, 1);
-
-    border-radius: 1rem;
-
-    transition: width 0.48s;
-  }
-
-  &-text {
-  }
-}
-
-.tabs {
-  &-viewer {
-    display: flex;
-    list-style: none;
-  }
-
-  &-view {
-    &--open {
-      display: initial;
-      width: 100%;
+    > .overlay-tabs {
+      transition: variables.$transition_is-playing;
     }
 
-    &--closed {
-      display: none;
-    }
-  }
+    > .overlay-toggles {
+      display: flex;
+      justify-content: center;
 
-  &-switcher {
-    display: flex;
-    justify-content: center;
+      gap: 3rem;
 
-    list-style: none;
-  }
+      margin-top: 3rem;
 
-  &-switch {
-    &--active {
-      opacity: initial;
-    }
-
-    &--inactive {
-      opacity: 0.6;
+      transition: variables.$transition_is-playing;
     }
   }
 }
 
-.scenes {
-  &-switcher {
-    display: flex;
-    justify-content: center;
-
-    list-style: none;
-  }
-
-  &-switch {
-    &--active {
-      opacity: initial;
+.is-playing {
+  .overlay {
+    &-branding {
+      opacity: 0.06;
     }
 
-    &--inactive {
-      opacity: 0.6;
+    &-tabs {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    &-toggles {
+      opacity: 0.24;
     }
   }
 }
+
+@import './overlay.progress.scss';
+@import './overlay.tabs.scss';
+@import './overlay.scenes.scss';
+@import './overlay.toggles.scss';

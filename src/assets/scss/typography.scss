@@ -1,0 +1,33 @@
+@use './variables.scss';
+
+@import url('https://fonts.googleapis.com/css?family=ABeeZee:400,400i&display=swap');
+
+html,
+body {
+  font-family: sans-serif;
+}
+
+a,
+.a {
+  color: hsl(0%, 0, 100);
+}
+
+h1,
+.h1 {
+  font-size: 2rem;
+  line-height: 2rem;
+}
+
+h2,
+.h2 {
+  margin-bottom: 0.25rem;
+
+  font-size: 1.5rem;
+  line-height: 1.5rem;
+}
+
+.subtitle {
+  margin-bottom: 2rem;
+
+  color: variables.$color_subtitle;
+}

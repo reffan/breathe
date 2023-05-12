@@ -38,7 +38,7 @@ const Canvas = () => {
     <div
       id='canvas'
       style={{
-        background: backgroundColors[1],
+        backgroundColor: backgroundColors[1],
         backgroundImage: `url('./assets/png/texture.png'), linear-gradient(${backgroundColors[0]}, ${backgroundColors[1]})`,
       }}
     >

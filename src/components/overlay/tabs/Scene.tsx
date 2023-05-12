@@ -32,7 +32,7 @@ const Scene = () => {
   return (
     <>
       <h2>Scene</h2>
-      Current Scene: {appContext.settings.scene}
+      <span className='subtitle'>Current Scene: {appContext.settings.scene}</span>
       <div className='controls'>
         <ul className='scenes-switcher'>
           {scenes.map((scene, index) => {
@@ -43,9 +43,8 @@ const Scene = () => {
                   onClick={() => {
                     changeScene(scene.scene)
                   }}
-                  className={
-                    appContext.settings.scene === scene.scene ? 'scenes-switch--active' : 'scenes-switch--inactive'
-                  }
+                  // prettier-ignore
+                  className={['scenes-switch', appContext.settings.scene === scene.scene ? 'active' : 'inactive'].join(' ')}
                 >
                   {scene.name}
                 </button>
@@ -62,7 +61,7 @@ const Scene = () => {
                 <div className='layout-column'>
                   <label htmlFor={`background-${index}`}>{valueLabel}</label>
                 </div>
-                <div className='layout-column--align-end'>
+                <div className='layout-column align-end'>
                   <span>
                     {appContext.settings.background[index]}
                     {/* {index === 0 ? '°' : '%'} */}

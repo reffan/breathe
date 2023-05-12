@@ -1,0 +1,38 @@
+@use './variables.scss';
+
+.toggles {
+  &-button {
+    appearance: none;
+
+    color: variables.$color_text;
+    background-color: transparent;
+
+    border: none;
+
+    cursor: pointer;
+  }
+
+  &-indicator {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    margin-bottom: 0.5rem;
+
+    width: 4rem;
+    height: 4rem;
+
+    background-color: variables.$color_toggles-indicator;
+    border: 2px solid variables.$color_text;
+    border-radius: 2rem;
+  }
+
+  &-button:hover {
+    .toggles-indicator {
+      background-color: variables.$color_toggles-indicator--hover;
+    }
+  }
+
+  &-text {
+  }
+}
