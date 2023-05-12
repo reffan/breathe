@@ -1,22 +1,22 @@
 import React, { useContext } from 'react'
-import { Context } from '@/types'
+import { AppContext } from '@/types'
 
-import { AppContext } from '@/AppContext'
+import { Context } from '@/Context'
 
 const Debug = () => {
-  const appContext = useContext<Context>(AppContext)
+  const context = useContext<AppContext>(Context)
 
   return (
     <>
       <h2>DEBUG</h2>
       <h3>isPlaying</h3>
-      <pre>{JSON.stringify(appContext.isPlaying, null, 2)}</pre>
+      <pre>{JSON.stringify(context.isPlaying, null, 2)}</pre>
       <h3>isMuted</h3>
-      <pre>{JSON.stringify(appContext.isMuted, null, 2)}</pre>
+      <pre>{JSON.stringify(context.isMuted, null, 2)}</pre>
       <h3>Settings</h3>
-      <pre>{JSON.stringify(appContext.settings, null, 2)}</pre>
+      <pre>{JSON.stringify(context.settings, null, 2)}</pre>
       <h3>Progress</h3>
-      <pre>{JSON.stringify(appContext.progress, null, 2)}</pre>
+      <pre>{JSON.stringify(context.progress, null, 2)}</pre>
     </>
   )
 }

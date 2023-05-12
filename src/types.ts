@@ -2,7 +2,7 @@ import { Dispatch, SetStateAction } from 'react'
 import { Container } from 'pixi.js'
 import { StaggerOptions, DirectionOptions, EasingOptions } from 'animejs'
 
-export type Context = {
+export type AppContext = {
   isPlaying: boolean
   setIsPlaying: Dispatch<SetStateAction<boolean>>
   isMuted: boolean

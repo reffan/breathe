@@ -1,11 +1,11 @@
 import React, { useContext, useEffect, useRef } from 'react'
-import { Context } from '@/types'
+import { AppContext } from '@/types'
 
-import { AppContext } from '@/AppContext'
+import { Context } from '@/Context'
 import { useScene } from '@/libraries/scene'
 
 const Canvas = () => {
-  const appContext = useContext<Context>(AppContext)
+  const context = useContext<AppContext>(Context)
   const { setupCanvas } = useScene()
 
   const canvas = useRef<HTMLCanvasElement>(null)
@@ -23,14 +23,14 @@ const Canvas = () => {
   // TODO: tween the colors?
   const backgroundColors = [
     `hsl(
-      ${appContext.settings.background[0] + 6}, 
-      ${appContext.settings.background[1]}%, 
-      ${appContext.settings.background[2] + 6}%
+      ${context.settings.background[0] + 6}, 
+      ${context.settings.background[1]}%, 
+      ${context.settings.background[2] + 6}%
     )`,
     `hsl(
-      ${appContext.settings.background[0]}, 
-      ${appContext.settings.background[1]}%, 
-      ${appContext.settings.background[2]}%
+      ${context.settings.background[0]}, 
+      ${context.settings.background[1]}%, 
+      ${context.settings.background[2]}%
     )`,
   ]
 

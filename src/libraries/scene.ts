@@ -1,9 +1,9 @@
 import { useContext, useEffect } from 'react'
 import { ICanvas, IRenderer, IRendererOptionsAuto, autoDetectRenderer } from 'pixi.js'
 import anime from 'animejs'
-import { Context, Scenes, SceneComponent, Animation, SceneAnimation } from '@/types'
+import { AppContext, Scenes, SceneComponent, Animation, SceneAnimation } from '@/types'
 
-import { AppContext } from '@/AppContext'
+import { Context } from '@/Context'
 import { useLoop } from '@/libraries/loop'
 import { subscribeEvent, unsubscribeEvent, dispatchEvent } from '@/libraries/event'
 import { playSound } from '@/libraries/sound'
@@ -25,7 +25,7 @@ let enterTimeout: ReturnType<typeof setTimeout>
 let isSingleton = false
 
 const useScene = () => {
-  const appContext = useContext<Context>(AppContext)
+  const context = useContext<AppContext>(Context)
   const { loopProgress, loopDurations } = useLoop()
 
   useEffect(() => {
@@ -96,13 +96,13 @@ const useScene = () => {
   }, [])
 
   useEffect(() => {
-    currentScene = appContext.settings.scene
+    currentScene = context.settings.scene
     dispatchEvent('exitScene')
 
     return () => {
       return
     }
-  }, [appContext.settings.scene])
+  }, [context.settings.scene])
 
   const setupCanvas = (canvas: HTMLCanvasElement, width: number, height: number) => {
     if (renderer) {

@@ -1,7 +1,7 @@
 import { useContext, useEffect } from 'react'
-import { Context, Settings, Progress, DurationFractions } from '@/types'
+import { AppContext, Settings, Progress, DurationFractions } from '@/types'
 
-import { AppContext } from '@/AppContext'
+import { Context } from '@/Context'
 import { subscribeEvent, unsubscribeEvent, dispatchEvent } from '@/libraries/event'
 import { TOTAL_COUNTDOWN_COUNTS, TOTAL_PATTERN_STEPS } from '@/utilities/constants'
 import { defaultProgress, defaultSettings } from '@/utilities/defaults'
@@ -16,26 +16,26 @@ let loopInterval: ReturnType<typeof setInterval>
 let isSingleton = false
 
 const useLoop = () => {
-  const appContext = useContext<Context>(AppContext)
-  settings = { ...appContext.settings }
-  progress = { ...appContext.progress }
+  const context = useContext<AppContext>(Context)
+  settings = { ...context.settings }
+  progress = { ...context.progress }
 
   useEffect(() => {
-    settings = { ...appContext.settings }
+    settings = { ...context.settings }
     countDuration = 1000 / settings.speed
 
     return () => {
       return
     }
-  }, [appContext.settings])
+  }, [context.settings])
 
   useEffect(() => {
-    progress = { ...appContext.progress }
+    progress = { ...context.progress }
 
     return () => {
       return
     }
-  }, [appContext.progress])
+  }, [context.progress])
 
   useEffect(() => {
     if (!isSingleton) {
@@ -62,7 +62,7 @@ const useLoop = () => {
   }, [])
 
   const advanceCountdown = () => {
-    appContext.setProgress((currentProgress: Progress): Progress => {
+    context.setProgress((currentProgress: Progress): Progress => {
       return {
         ...currentProgress,
         countdown: currentProgress.countdown + 1,
@@ -75,7 +75,7 @@ const useLoop = () => {
     if (progress.cycle < settings.cycles) {
       progress = advanceCountLogic()
 
-      appContext.setProgress((currentProgress: Progress): Progress => {
+      context.setProgress((currentProgress: Progress): Progress => {
         return advanceCountLogic(currentProgress)
       })
 
@@ -89,7 +89,7 @@ const useLoop = () => {
     // TODO: why does all of this happen so late?
     // TODO: how does this one get cleared?
     setTimeout(() => {
-      appContext.setIsPlaying((): boolean => {
+      context.setIsPlaying((): boolean => {
         return false
       })
 
@@ -149,7 +149,7 @@ const useLoop = () => {
   const resetLoop = () => {
     clearInterval(loopInterval)
 
-    appContext.setProgress((): Progress => {
+    context.setProgress((): Progress => {
       return defaultProgress
     })
   }

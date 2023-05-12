@@ -1,15 +1,15 @@
 import React, { ChangeEvent, useContext } from 'react'
-import { Context, Settings, Scenes } from '@/types'
+import { AppContext, Settings, Scenes } from '@/types'
 
-import { AppContext } from '@/AppContext'
+import { Context } from '@/Context'
 import { scenes } from '@/utilities/scenes'
 import { background } from '@/utilities/labels'
 
 const Scene = () => {
-  const appContext = useContext<Context>(AppContext)
+  const context = useContext<AppContext>(Context)
 
   const changeScene = (scene: Scenes) => {
-    appContext.setSettings((currentSettings: Settings): Settings => {
+    context.setSettings((currentSettings: Settings): Settings => {
       return {
         ...currentSettings,
         scene: scene,
@@ -18,7 +18,7 @@ const Scene = () => {
   }
 
   const changeBackground = (event: ChangeEvent<HTMLInputElement>, step: number) => {
-    appContext.setSettings((currentSettings: Settings): Settings => {
+    context.setSettings((currentSettings: Settings): Settings => {
       const background = currentSettings.background
       background[step] = +event.target.value
 
@@ -32,7 +32,7 @@ const Scene = () => {
   return (
     <>
       <h2>Scene</h2>
-      <span className='subtitle'>Current Scene: {appContext.settings.scene}</span>
+      <span className='subtitle'>Current Scene: {context.settings.scene}</span>
       <div className='controls'>
         <ul className='scenes-switcher'>
           {scenes.map((scene, index) => {
@@ -44,7 +44,7 @@ const Scene = () => {
                     changeScene(scene.scene)
                   }}
                   // prettier-ignore
-                  className={['scenes-switch', appContext.settings.scene === scene.scene ? 'active' : 'inactive'].join(' ')}
+                  className={['scenes-switch', context.settings.scene === scene.scene ? 'active' : 'inactive'].join(' ')}
                 >
                   {scene.name}
                 </button>
@@ -63,7 +63,7 @@ const Scene = () => {
                 </div>
                 <div className='layout-column align-end'>
                   <span>
-                    {appContext.settings.background[index]}
+                    {context.settings.background[index]}
                     {/* {index === 0 ? '°' : '%'} */}
                   </span>
                 </div>
@@ -78,7 +78,7 @@ const Scene = () => {
                 onChange={(e) => {
                   changeBackground(e, index)
                 }}
-                defaultValue={appContext.settings.background[index]}
+                defaultValue={context.settings.background[index]}
               />
             </div>
           )

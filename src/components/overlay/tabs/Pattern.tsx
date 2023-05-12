@@ -1,14 +1,14 @@
 import React, { ChangeEvent, useContext } from 'react'
-import { Context, Settings } from '@/types'
+import { AppContext, Settings } from '@/types'
 
-import { AppContext } from '@/AppContext'
+import { Context } from '@/Context'
 import { steps } from '@/utilities/labels'
 
 const Pattern = () => {
-  const appContext = useContext<Context>(AppContext)
+  const context = useContext<AppContext>(Context)
 
   const changePattern = (event: ChangeEvent<HTMLInputElement>, step: number) => {
-    appContext.setSettings((currentSettings: Settings): Settings => {
+    context.setSettings((currentSettings: Settings): Settings => {
       const pattern = currentSettings.pattern
       pattern[step] = +event.target.value
 
@@ -22,7 +22,7 @@ const Pattern = () => {
   return (
     <>
       <h2>Breathing Pattern</h2>
-      <span className='subtitle'>Current Pattern: {appContext.settings.pattern.join(' / ')}</span>
+      <span className='subtitle'>Current Pattern: {context.settings.pattern.join(' / ')}</span>
       <div className='controls'>
         {steps.map((stepLabel, index) => {
           return (
@@ -32,7 +32,7 @@ const Pattern = () => {
                   <label htmlFor={`pattern-${index}`}>{stepLabel}</label>
                 </div>
                 <div className='layout-column align-end'>
-                  <span>{appContext.settings.pattern[index]}</span>
+                  <span>{context.settings.pattern[index]}</span>
                 </div>
               </div>
               <input
@@ -45,7 +45,7 @@ const Pattern = () => {
                 onChange={(e) => {
                   changePattern(e, index)
                 }}
-                defaultValue={appContext.settings.pattern[index]}
+                defaultValue={context.settings.pattern[index]}
               />
             </div>
           )
