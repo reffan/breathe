@@ -20,6 +20,8 @@ let scene: () => SceneComponent
 let canvasWidth: number
 let canvasHeight: number
 
+let enterTimeout: ReturnType<typeof setTimeout>
+
 let isSingleton = false
 
 const useScene = () => {
@@ -135,10 +137,13 @@ const useScene = () => {
   }
 
   const enterScene = async () => {
+    clearTimeout(enterTimeout)
     scene().resizeScene(canvasWidth, canvasHeight)
-    await transitionAnimation('enterAnimation')
 
-    dispatchEvent('idleScene')
+    enterTimeout = setTimeout(async () => {
+      await transitionAnimation('enterAnimation')
+      dispatchEvent('idleScene')
+    }, ENTER_SCENE_DELAY)
   }
 
   const exitScene = async () => {
@@ -147,9 +152,7 @@ const useScene = () => {
     const sceneComponent = await import(`../scenes/${currentScene}.ts`)
     scene = sceneComponent.default
 
-    setTimeout(() => {
-      dispatchEvent('enterScene')
-    }, ENTER_SCENE_DELAY)
+    dispatchEvent('enterScene')
   }
 
   const startScene = async () => {

@@ -34,7 +34,11 @@ const Header = () => {
 
     totalProgressCounts += appContext.progress.count
 
-    const progressPercentage = (totalProgressCounts / totalCountsInCycles) * 100
+    // MARK: Add 1 for immediate display
+    totalProgressCounts += 1
+
+    // MARK: Cap at max 100% progress
+    const progressPercentage = Math.min(totalProgressCounts / totalCountsInCycles, 1) * 100
     return progressPercentage
   }
 

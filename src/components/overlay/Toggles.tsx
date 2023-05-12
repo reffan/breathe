@@ -11,7 +11,7 @@ const Toggles = () => {
   const togglePlay = () => {
     if (!appContext.isPlaying) {
       dispatchEvent('startScene')
-      dispatchEvent('updateLoop')
+      dispatchEvent('startLoop')
     } else {
       dispatchEvent('stopScene')
       dispatchEvent('resetLoop')

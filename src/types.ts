@@ -23,7 +23,7 @@ export type Settings = {
   background: [number, number, number]
 }
 
-export type ProgressEvent = 'updateLoop' | 'resetLoop'
+export type ProgressEvent = 'startLoop' | 'resetLoop'
 
 export type Progress = {
   countdown: number

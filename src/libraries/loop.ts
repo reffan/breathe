@@ -11,7 +11,7 @@ let settings: Settings = defaultSettings
 let progress: Progress = defaultProgress
 let countDuration = 1000
 
-let loopTimeout: ReturnType<typeof setTimeout>
+let loopInterval: ReturnType<typeof setInterval>
 
 let isSingleton = false
 
@@ -39,8 +39,8 @@ const useLoop = () => {
 
   useEffect(() => {
     if (!isSingleton) {
-      subscribeEvent('updateLoop', () => {
-        updateLoop()
+      subscribeEvent('startLoop', () => {
+        startLoop()
       })
 
       subscribeEvent('resetLoop', () => {
@@ -51,7 +51,7 @@ const useLoop = () => {
     isSingleton = true
 
     return () => {
-      unsubscribeEvent('updateLoop', () => {
+      unsubscribeEvent('startLoop', () => {
         return
       })
 
@@ -128,6 +128,14 @@ const useLoop = () => {
     return updateProgress
   }
 
+  const startLoop = () => {
+    updateLoop()
+
+    loopInterval = setInterval(() => {
+      updateLoop()
+    }, countDuration)
+  }
+
   const updateLoop = () => {
     if (progress.countdown < TOTAL_COUNTDOWN_COUNTS) {
       advanceCountdown()
@@ -136,18 +144,10 @@ const useLoop = () => {
     if (progress.countdown >= TOTAL_COUNTDOWN_COUNTS - 1) {
       advanceCount()
     }
-
-    loopTimeout = setTimeout(() => {
-      updateLoop()
-    }, countDuration)
-  }
-
-  const clearLoop = () => {
-    clearTimeout(loopTimeout)
   }
 
   const resetLoop = () => {
-    clearLoop()
+    clearInterval(loopInterval)
 
     appContext.setProgress((): Progress => {
       return defaultProgress
@@ -174,8 +174,6 @@ const useLoop = () => {
   }
 
   return {
-    updateLoop,
-    resetLoop,
     loopDurations,
     loopProgress,
   }
