@@ -7,58 +7,55 @@ export type AppContext = {
   setIsPlaying: Dispatch<SetStateAction<boolean>>
   isMuted: boolean
   setIsMuted: Dispatch<SetStateAction<boolean>>
-
   settings: Settings
   setSettings: Dispatch<SetStateAction<Settings>>
   progress: Progress
   setProgress: Dispatch<SetStateAction<Progress>>
 }
 
-export type AppContextEvent = 'updateSettings' | 'updateProgress'
-
 export type Settings = {
   speed: number
   cycles: number
   pattern: [number, number, number, number]
-
   scene: Scenes
   background: [number, number, number]
 }
 
 export type Progress = {
   countdown: number
-
   cycle: number
   step: number
   count: number
 }
 
-// prettier-ignore
-export type LoopEvent = 'startLoop' | 'resetLoop'
+export type AppContextEvents = 'updateSettings' | 'updateProgress'
+export type LoopEvents = 'startLoop' | 'resetLoop'
 
 // prettier-ignore
-export type SceneEvent = 'enterScene' | 'exitScene' | 'startScene' | 'stopScene' | 'idleScene' | 'loopScene'
+export type SceneEvents = 'enterScene' | 'exitScene' | 'startScene' | 'stopScene' | 'idleScene' | 'loopScene'
 
-// prettier-ignore
-export type SceneAnimation = 'enterAnimation' | 'exitAnimation' | 'startAnimation' | 'stopAnimation' | 'idleAnimation' | 'loopAnimation'
+export type Events = AppContextEvents | LoopEvents | SceneEvents
 
-export type SceneComponent = {
-  container: Container
+export type Scene = {
+  container: () => Container
+  durationFractions: DurationFractions
+
   resizeScene: (width: number, height: number) => void
   drawScene: () => void
 
-  enterAnimation: () => Animation
-  exitAnimation: () => Animation
-  startAnimation: () => Animation
-  stopAnimation: () => Animation
-  idleAnimation: () => Animation
-  loopAnimation: () => LoopAnimations
-
-  durationFractions: DurationFractions
+  stages: {
+    enterScene: { sound?: Sounds; animation: Animation }
+    exitScene: { sound?: Sounds; animation: Animation }
+    startScene: { sound?: Sounds; animation: Animation }
+    stopScene: { sound?: Sounds; animation: Animation }
+    idleScene: { sound?: Sounds; animation: Animation }
+    loopScene: {
+      cycle?: { sound?: Sounds; animation: Animation }
+      step?: { sound?: Sounds; animation: Animation }
+      count?: { sound?: Sounds; animation: Animation }
+    }
+  }
 }
-
-// prettier-ignore
-export type Scenes = 'DEBUG' | 'aqua'
 
 export type Durations = {
   cycle: number
@@ -83,8 +80,14 @@ export type Animation = {
   easing?: EasingOptions
 }
 
-export type LoopAnimations = {
-  cycle?: Animation
-  step?: Animation
-  count?: Animation
-}
+export type Scenes = 'DEBUG' | 'aqua'
+
+export type Sounds =
+  | 'kalimba-b3'
+  | 'kalimba-a4'
+  | 'kalimba-b4'
+  | 'kalimba-d4'
+  | 'kalimba-e4'
+  | 'kalimba-f4'
+  | 'kalimba-c5'
+  | 'kalimba-e5'

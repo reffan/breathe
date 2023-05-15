@@ -1,5 +1,5 @@
 import { Container, Graphics } from 'pixi.js'
-import { Animation, LoopAnimations, SceneComponent } from '@/types'
+import { Scene } from '@/types'
 
 const container = new Container()
 container.eventMode = 'none'
@@ -31,117 +31,130 @@ const state = {
   },
 }
 
-const aqua = (): SceneComponent => {
-  const enterAnimation = (): Animation => {
-    return {
-      targets: state.scene.ripples,
-      transformations: {
-        radius: [0, state.initial.radius],
-        opacity: [0, state.initial.opacity],
+const aqua: Scene = {
+  stages: {
+    enterScene: {
+      // sound: '',
+      animation: {
+        targets: state.scene.ripples,
+        transformations: {
+          radius: [0, state.initial.radius],
+          opacity: [0, state.initial.opacity],
+        },
+        duration: 1080,
+        stagger: 1080 * 0.18,
       },
-      duration: 1080,
-      stagger: 1080 * 0.18,
-    }
-  }
-
-  const exitAnimation = (): Animation => {
-    return {
-      targets: state.scene.ripples,
-      transformations: {
-        radius: 0,
-        opacity: 0,
+    },
+    exitScene: {
+      // sound: '',
+      animation: {
+        targets: state.scene.ripples,
+        transformations: {
+          radius: 0,
+          opacity: 0,
+        },
+        duration: 840,
+        stagger: 840 * 0.09,
       },
-      duration: 840,
-      stagger: 840 * 0.09,
-    }
-  }
-
-  const startAnimation = (): Animation => {
-    return {
-      targets: state.scene.ripples,
-      transformations: {
-        radius: 24,
-        opacity: state.initial.opacity,
+    },
+    startScene: {
+      sound: 'kalimba-f4',
+      animation: {
+        targets: state.scene.ripples,
+        transformations: {
+          radius: 24,
+          opacity: state.initial.opacity,
+        },
       },
-    }
-  }
-
-  const stopAnimation = (): Animation => {
-    return {
-      targets: state.scene.ripples,
-      transformations: {
-        radius: 24,
-        opacity: state.initial.opacity,
+    },
+    stopScene: {
+      sound: 'kalimba-b3',
+      animation: {
+        targets: state.scene.ripples,
+        transformations: {
+          radius: 24,
+          opacity: state.initial.opacity,
+        },
       },
-    }
-  }
-
-  const idleAnimation = (): Animation => {
-    return {
-      targets: state.scene.ripples,
-      transformations: {
-        // opacity: [0.84, 1],
-        // radius: [20, 24],
-        radius: state.initial.radius,
-        opacity: state.initial.opacity,
+    },
+    idleScene: {
+      // sound: '',
+      animation: {
+        targets: state.scene.ripples,
+        transformations: {
+          // opacity: [0.84, 1],
+          // radius: [20, 24],
+          radius: state.initial.radius,
+          opacity: state.initial.opacity,
+        },
+        // duration: 3600,
+        // loop: true,
+        // direction: 'alternate',
+        // easing: 'easeInOutSine',
       },
-      // duration: 3600,
-      // loop: true,
-      // direction: 'alternate',
-      // easing: 'easeInOutSine',
-    }
-  }
-
-  const loopAnimation = (): LoopAnimations => {
-    return {
+    },
+    loopScene: {
       // cycle: {
-      //   targets: [],
-      //   transformations: [],
+      //   // sound: '',
+      //   animation: {
+      //     targets: [],
+      //     transformations: [],
+      //   },
       // },
       step: {
-        targets: state.scene.ripples,
-        transformations: [
-          {
-            radius: 144,
-          },
-          {},
-          {
-            radius: 12,
-          },
-          {},
-        ],
-        easing: 'easeInOutSine',
+        sound: 'kalimba-e4',
+        animation: {
+          targets: state.scene.ripples,
+          transformations: [
+            {
+              radius: 144,
+            },
+            {},
+            {
+              radius: 12,
+            },
+            {},
+          ],
+          easing: 'easeInOutSine',
+        },
       },
       count: {
-        targets: state.scene.ripples,
-        transformations: [
-          {},
-          {
-            opacity: [0.72, 1],
-          },
-          {},
-          {
-            opacity: [0.72, 1],
-          },
-        ],
-        easing: 'easeInOutSine',
+        sound: 'kalimba-e5',
+        animation: {
+          targets: state.scene.ripples,
+          transformations: [
+            {},
+            {
+              opacity: [0.72, 1],
+            },
+            {},
+            {
+              opacity: [0.72, 1],
+            },
+          ],
+          easing: 'easeInOutSine',
+        },
       },
-    }
-  }
+    },
+  },
 
-  const durationFractions = {
+  durationFractions: {
     cycle: 1,
     step: 1,
     count: 0.72,
     stagger: 0.18,
-  }
+  },
 
-  const resizeScene = (width: number, height: number) => {
+  container: () => {
+    return container
+  },
+
+  resizeScene: (width: number, height: number) => {
     container.position.x = width / 2
     container.position.y = height / 2
-  }
+  },
 
-  const drawScene = () => {
+  drawScene: () => {
     ripples.clear()
 
     state.scene.ripples.forEach((ripple, index) => {
@@ -149,22 +162,7 @@ const aqua = (): SceneComponent => {
       ripples.drawCircle(0, 0, ripple.radius)
       ripples.closePath()
     })
-  }
-
-  return {
-    container,
-    resizeScene,
-    drawScene,
-
-    enterAnimation,
-    exitAnimation,
-    startAnimation,
-    stopAnimation,
-    idleAnimation,
-    loopAnimation,
-
-    durationFractions,
-  }
+  },
 }
 
 export default aqua

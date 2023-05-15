@@ -1,6 +1,6 @@
 // MARK: For testing purposes
 import { Container, Graphics } from 'pixi.js'
-import { Animation, LoopAnimations, SceneComponent } from '@/types'
+import { Scene } from '@/types'
 
 const container = new Container()
 container.eventMode = 'none'
@@ -41,136 +41,133 @@ ripples.forEach((ripple, index) => {
   container.addChild(ripple)
 })
 
-const debug = (): SceneComponent => {
-  const enterAnimation = (): Animation => {
-    return {
-      targets: state.scene.ripples,
-      transformations: {
-        scale: [0, state.initial.scale],
-        opacity: [0, state.initial.opacity],
+const DEBUG: Scene = {
+  stages: {
+    enterScene: {
+      // sound: '',
+      animation: {
+        targets: state.scene.ripples,
+        transformations: {
+          scale: [0, state.initial.scale],
+          opacity: [0, state.initial.opacity],
+        },
+        duration: 1800,
       },
-      duration: 1800,
-    }
-  }
-
-  const exitAnimation = (): Animation => {
-    return {
-      targets: state.scene.ripples,
-      transformations: {
-        scale: 0,
-        opacity: 0,
+    },
+    exitScene: {
+      // sound: '',
+      animation: {
+        targets: state.scene.ripples,
+        transformations: {
+          scale: 0,
+          opacity: 0,
+        },
+        duration: 900,
       },
-      duration: 900,
-    }
-  }
-
-  const startAnimation = (): Animation => {
-    return {
-      targets: state.scene.ripples,
-      transformations: {
-        scale: 0.48,
+    },
+    startScene: {
+      // sound: '',
+      animation: {
+        targets: state.scene.ripples,
+        transformations: {
+          scale: 0.48,
+        },
       },
-    }
-  }
-
-  const stopAnimation = (): Animation => {
-    return {
-      targets: state.scene.ripples,
-      transformations: {
-        scale: 0.48,
+    },
+    stopScene: {
+      // sound: '',
+      animation: {
+        targets: state.scene.ripples,
+        transformations: {
+          scale: 0.48,
+        },
       },
-    }
-  }
-
-  const idleAnimation = (): Animation => {
-    return {
-      targets: state.scene.ripples,
-      transformations: {
-        opacity: [0.84, 1],
-        scale: [0.84, 1],
+    },
+    idleScene: {
+      // sound: '',
+      animation: {
+        targets: state.scene.ripples,
+        transformations: {
+          opacity: [0.84, 1],
+          scale: [0.84, 1],
+        },
+        duration: 3600,
+        loop: true,
+        direction: 'alternate',
+        easing: 'easeInOutSine',
       },
-      duration: 3600,
-      loop: true,
-      direction: 'alternate',
-      easing: 'easeInOutSine',
-    }
-  }
-
-  const loopAnimation = (): LoopAnimations => {
-    return {
+    },
+    loopScene: {
       // cycle: {
-      //   targets: [],
-      //   transformations: [],
-      //   //
+      //   // sound: '',
+      //   animation: {
+      //     targets: [],
+      //     transformations: [],
+      //   },
       // },
       step: {
-        targets: state.scene.ripples,
-        transformations: [
-          {
-            scale: 2.4,
-          },
-          {},
-          {
-            scale: 0.24,
-          },
-          {},
-        ],
-        easing: 'easeInOutSine',
+        // sound: '',
+        animation: {
+          targets: state.scene.ripples,
+          transformations: [
+            {
+              scale: 2.4,
+            },
+            {},
+            {
+              scale: 0.24,
+            },
+            {},
+          ],
+          easing: 'easeInOutSine',
+        },
       },
       count: {
-        targets: state.scene.ripples,
-        transformations: [
-          {
-            opacity: [0.84, 1],
-          },
-          {
-            opacity: [0.72, 1],
-          },
-          {
-            opacity: [0.84, 1],
-          },
-          {
-            opacity: [0.72, 1],
-          },
-        ],
-        easing: 'easeInOutSine',
+        // sound: '',
+        animation: {
+          targets: state.scene.ripples,
+          transformations: [
+            {
+              opacity: [0.84, 1],
+            },
+            {
+              opacity: [0.72, 1],
+            },
+            {
+              opacity: [0.84, 1],
+            },
+            {
+              opacity: [0.72, 1],
+            },
+          ],
+          easing: 'easeInOutSine',
+        },
       },
-    }
-  }
+    },
+  },
 
-  const durationFractions = {
+  durationFractions: {
     cycle: 1,
     step: 1,
     count: 0.72,
     stagger: 0.18,
-  }
+  },
 
-  const resizeScene = (width: number, height: number) => {
+  container: () => {
+    return container
+  },
+
+  resizeScene: (width: number, height: number) => {
     container.position.x = width / 2
     container.position.y = height / 2
-  }
+  },
 
-  const drawScene = () => {
+  drawScene: () => {
     ripples.forEach((ripple, index) => {
       ripple.scale.set(state.scene.ripples[index].scale, state.scene.ripples[index].scale)
       ripple.alpha = state.scene.ripples[index].opacity / index
     })
-  }
-
-  return {
-    container,
-    resizeScene,
-    drawScene,
-
-    enterAnimation,
-    exitAnimation,
-    startAnimation,
-    stopAnimation,
-    idleAnimation,
-    loopAnimation,
-
-    durationFractions,
-  }
+  },
 }
 
-export default debug
+export default DEBUG

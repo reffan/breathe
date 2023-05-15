@@ -1,30 +1,8 @@
 import anime from 'animejs'
-import { SceneComponent, Animation, SceneAnimation } from '@/types'
+import { Animation } from '@/types'
+
 import { defaultAnimation } from '@/utilities/defaults'
 
-// TODO: refactor the name
-const transition = async (identifier: SceneAnimation, scene?: () => SceneComponent) => {
-  if (!scene) {
-    return
-  }
-
-  // TODO: uhh?
-  const transition = (scene() as any)[identifier]()
-
-  // TODO: figure out the type for 'any' target
-  transition.targets.forEach((target: any[]) => {
-    anime.remove(target)
-  })
-
-  await animate([
-    {
-      ...transition,
-      identifier,
-    },
-  ])
-}
-
-// TODO: refactor the name
 const animate = async (animations: Animation[]) => {
   // DEBUG:
   // console.debug({ animations })
@@ -50,5 +28,10 @@ const animate = async (animations: Animation[]) => {
   await Promise.all(animationPromises)
 }
 
-export { transition, animate }
-export default { transition, animate }
+// TODO: replace any with AnimeTarget?
+const remove = (target: any) => {
+  anime.remove(target)
+}
+
+export { animate, remove }
+export default { animate, remove }

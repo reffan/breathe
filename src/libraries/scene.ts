@@ -1,5 +1,5 @@
 import { ICanvas, IRenderer, IRendererOptionsAuto, autoDetectRenderer } from 'pixi.js'
-import { Animation, SceneComponent, Scenes } from '@/types'
+import { SceneEvents, Scene, Scenes, Animation, Sounds } from '@/types'
 
 import store from '@/store'
 import event from '@/libraries/event'
@@ -11,7 +11,7 @@ import { ENTER_SCENE_DELAY } from '@/utilities/constants'
 
 type State = {
   renderer?: IRenderer<ICanvas>
-  scene?: () => SceneComponent
+  scene?: Scene
   currentScene: Scenes
   enterTimeoutFn?: ReturnType<typeof setTimeout>
 }
@@ -56,15 +56,8 @@ const resizeCanvas = () => {
   }
 
   if (state.scene) {
-    state.scene().resizeScene(width, height)
+    state.scene.resizeScene(width, height)
   }
-}
-
-const setScene = async (newScene: Scenes) => {
-  const sceneComponent = await import(`../scenes/${newScene}.ts`)
-
-  state.scene = sceneComponent.default
-  state.currentScene = newScene
 }
 
 const renderScene = () => {
@@ -78,8 +71,45 @@ const renderScene = () => {
     return
   }
 
-  state.scene().drawScene()
-  state.renderer.render(state.scene().container)
+  state.scene.drawScene()
+  state.renderer.render(state.scene.container())
+}
+
+const setScene = async (newScene: Scenes) => {
+  const sceneComponent = await import(`../scenes/${newScene}.ts`)
+
+  state.scene = sceneComponent.default
+  state.currentScene = newScene
+}
+
+// TODO: refactor the name
+const triggerStage = async (identifier: SceneEvents) => {
+  if (!state.scene) {
+    return
+  }
+
+  if (identifier === 'loopScene') {
+    return
+  }
+
+  const stage = state.scene.stages[identifier]
+
+  // TODO: figure out the type for 'any' target
+  stage.animation.targets.forEach((target: any[]) => {
+    animation.remove(target)
+  })
+
+  if (stage.sound) {
+    // TODO: implement isMuted
+    sound.play([stage.sound], false)
+  }
+
+  await animation.animate([
+    {
+      ...stage.animation,
+      identifier: identifier,
+    },
+  ])
 }
 
 const sceneEvents = {
@@ -93,77 +123,86 @@ const sceneEvents = {
     const width = window.innerWidth
     const height = window.innerHeight
 
-    state.scene().resizeScene(width, height)
+    state.scene.resizeScene(width, height)
 
     state.enterTimeoutFn = setTimeout(async () => {
-      await animation.transition('enterAnimation', state.scene)
+      await triggerStage('enterScene')
       event.dispatch('idleScene')
     }, ENTER_SCENE_DELAY)
   },
   exit: async (newScene: Scenes) => {
-    await animation.transition('exitAnimation', state.scene)
+    await triggerStage('exitScene')
     await setScene(newScene)
     event.dispatch('enterScene')
   },
   start: async () => {
-    sound.play('kalimba-f4')
-    await animation.transition('startAnimation', state.scene)
+    await triggerStage('startScene')
   },
 
   stop: async () => {
-    // sound.play('kalimba-b3')
-    await animation.transition('stopAnimation', state.scene)
+    await triggerStage('stopScene')
     event.dispatch('idleScene')
   },
   idle: async () => {
-    await animation.transition('idleAnimation', state.scene)
+    await triggerStage('idleScene')
   },
   loop: async () => {
     if (!state.scene) {
       return
     }
 
-    const animations: Animation[] = []
-    const loops = state.scene()['loopAnimation']()
+    const stage = state.scene.stages['loopScene']
+    const durations = loopDurations(state.scene.durationFractions)
 
-    const durations = loopDurations(state.scene().durationFractions)
+    const animations: Animation[] = []
+    const sounds: Sounds[] = []
 
     // MARK: Cycle
-    if (loops.cycle && store.getProgress().step === 0 && store.getProgress().count === 0) {
+    if (stage.cycle && store.getProgress().step === 0 && store.getProgress().count === 0) {
+      if (stage.cycle.sound) {
+        sounds.push(stage.cycle.sound)
+      }
+
       animations.push({
-        ...loops.cycle,
+        ...stage.cycle.animation,
         identifier: 'cycle',
         duration: durations.cycle,
-        transformations: loops.cycle.transformations[store.getProgress().step],
+        transformations: stage.cycle.animation.transformations[store.getProgress().step],
       })
     }
 
     // MARK: Step
-    if (loops.step && store.getProgress().count === 0) {
-      // sound.play('kalimba-e4')
+    if (stage.step && store.getProgress().count === 0) {
+      if (stage.step.sound) {
+        sounds.push(stage.step.sound)
+      }
 
       animations.push({
-        ...loops.step,
+        ...stage.step.animation,
         identifier: 'step',
         duration: durations.step,
         // TODO: check if stagger?
         stagger: durations.stagger,
-        transformations: loops.step.transformations[store.getProgress().step],
+        transformations: stage.step.animation.transformations[store.getProgress().step],
       })
     }
 
     // MARK: Count
-    if (loops.count) {
-      // sound.play('kalimba-e5')
+    if (stage.count) {
+      if (stage.count.sound) {
+        sounds.push(stage.count.sound)
+      }
 
       animations.push({
-        ...loops.count,
+        ...stage.count.animation,
         identifier: 'count',
         duration: durations.count,
-        transformations: loops.count.transformations[store.getProgress().step],
+        transformations: stage.count.animation.transformations[store.getProgress().step],
       })
     }
 
+    // TODO: implement isMuted
+    sound.play(sounds, false)
     animation.animate(animations)
   },
 }
