@@ -14,6 +14,8 @@ export type AppContext = {
   setProgress: Dispatch<SetStateAction<Progress>>
 }
 
+export type AppContextEvent = 'updateSettings' | 'updateProgress'
+
 export type Settings = {
   speed: number
   cycles: number
@@ -22,8 +24,6 @@ export type Settings = {
   scene: Scenes
   background: [number, number, number]
 }
-
-export type ProgressEvent = 'startLoop' | 'resetLoop'
 
 export type Progress = {
   countdown: number
@@ -34,7 +34,7 @@ export type Progress = {
 }
 
 // prettier-ignore
-export type Scenes = 'debug' | 'aqua'
+export type LoopEvent = 'startLoop' | 'resetLoop'
 
 // prettier-ignore
 export type SceneEvent = 'enterScene' | 'exitScene' | 'startScene' | 'stopScene' | 'idleScene' | 'loopScene'
@@ -57,12 +57,17 @@ export type SceneComponent = {
   durationFractions: DurationFractions
 }
 
-export type DurationFractions = {
+// prettier-ignore
+export type Scenes = 'DEBUG' | 'aqua'
+
+export type Durations = {
   cycle: number
   step: number
   count: number
   stagger: number
 }
+
+export type DurationFractions = Durations
 
 // TODO: figure out the type for 'any' targets and transformations
 export type Animation = {

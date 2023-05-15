@@ -2,7 +2,7 @@ import React, { useContext } from 'react'
 import { AppContext } from '@/types'
 
 import { Context } from '@/Context'
-import { dispatchEvent } from '@/libraries/event'
+import event from '@/libraries/event'
 import { play as playLabel, mute as muteLabel } from '@/utilities/labels'
 
 const Toggles = () => {
@@ -10,11 +10,11 @@ const Toggles = () => {
 
   const togglePlay = () => {
     if (!context.isPlaying) {
-      dispatchEvent('startScene')
-      dispatchEvent('startLoop')
+      event.dispatch('startScene')
+      event.dispatch('startLoop', { currentSettings: context.settings })
     } else {
-      dispatchEvent('stopScene')
-      dispatchEvent('resetLoop')
+      event.dispatch('stopScene')
+      event.dispatch('resetLoop')
     }
 
     context.setIsPlaying((currentState: boolean): boolean => {

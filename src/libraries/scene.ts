@@ -1,195 +1,146 @@
-import { useContext, useEffect } from 'react'
 import { ICanvas, IRenderer, IRendererOptionsAuto, autoDetectRenderer } from 'pixi.js'
-import anime from 'animejs'
-import { AppContext, Scenes, SceneComponent, Animation, SceneAnimation } from '@/types'
+import { Animation, SceneComponent, Scenes } from '@/types'
 
-import { Context } from '@/Context'
-import { useLoop } from '@/libraries/loop'
-import { subscribeEvent, unsubscribeEvent, dispatchEvent } from '@/libraries/event'
-import { playSound } from '@/libraries/sound'
+import store from '@/store'
+import event from '@/libraries/event'
+import animation from '@/libraries/animation'
+import sound from '@/libraries/sound'
+import { loopDurations } from '@/libraries/loop'
+import { defaultSettings } from '@/utilities/defaults'
 import { ENTER_SCENE_DELAY } from '@/utilities/constants'
-import { defaultAnimation, defaultSettings } from '@/utilities/defaults'
 
-// MARK: Because the context doesn't stay reactive...
-let currentScene: Scenes = defaultSettings.scene
+type State = {
+  renderer?: IRenderer<ICanvas>
+  scene?: () => SceneComponent
+  currentScene: Scenes
+  enterTimeoutFn?: ReturnType<typeof setTimeout>
+}
 
-let renderer: IRenderer<ICanvas>
-let scene: () => SceneComponent
+const state: State = {
+  renderer: undefined,
+  scene: undefined,
+  currentScene: defaultSettings.scene,
+  enterTimeoutFn: undefined,
+}
 
-// TODO: not sure if necessary?
-let canvasWidth: number
-let canvasHeight: number
+const setupCanvas = (canvas: HTMLCanvasElement) => {
+  if (state.renderer) {
+    return
+  }
 
-let enterTimeout: ReturnType<typeof setTimeout>
+  const width = window.innerWidth
+  const height = window.innerHeight
 
-let isSingleton = false
+  const options: Partial<IRendererOptionsAuto> = {
+    view: canvas,
+    width: width,
+    height: height,
+    autoDensity: true,
+    antialias: true,
+    backgroundAlpha: 0,
+    resolution: window.devicePixelRatio || 1,
+  }
 
-const useScene = () => {
-  const context = useContext<AppContext>(Context)
-  const { loopProgress, loopDurations } = useLoop()
+  state.renderer = autoDetectRenderer(options)
+  requestAnimationFrame(renderScene)
 
-  useEffect(() => {
-    if (!isSingleton) {
-      subscribeEvent('enterScene', () => {
-        enterScene()
-      })
+  window.addEventListener('resize', resizeCanvas)
+}
 
-      subscribeEvent('exitScene', () => {
-        exitScene()
-      })
+const resizeCanvas = () => {
+  const width = window.innerWidth
+  const height = window.innerHeight
 
-      subscribeEvent('startScene', () => {
-        startScene()
-      })
+  if (state.renderer) {
+    state.renderer.resize(width, height)
+  }
 
-      subscribeEvent('stopScene', () => {
-        stopScene()
-      })
+  if (state.scene) {
+    state.scene().resizeScene(width, height)
+  }
+}
 
-      subscribeEvent('idleScene', () => {
-        idleScene()
-      })
+const setScene = async (newScene: Scenes) => {
+  const sceneComponent = await import(`../scenes/${newScene}.ts`)
 
-      subscribeEvent('loopScene', () => {
-        loopScene()
-      })
-    }
+  state.scene = sceneComponent.default
+  state.currentScene = newScene
+}
 
-    isSingleton = true
+const renderScene = () => {
+  requestAnimationFrame(renderScene)
 
-    if (!scene) {
-      currentScene = defaultSettings.scene
+  if (!state.renderer) {
+    return
+  }
 
-      const setScene = async () => {
-        const sceneComponent = await import(`../scenes/${currentScene}.ts`)
-        scene = sceneComponent.default
-      }
+  if (!state.scene) {
+    return
+  }
 
-      setScene()
-    }
+  state.scene().drawScene()
+  state.renderer.render(state.scene().container)
+}
 
-    return () => {
-      unsubscribeEvent('enterScene', () => {
-        return
-      })
+const sceneEvents = {
+  enter: async () => {
+    clearTimeout(state.enterTimeoutFn)
 
-      unsubscribeEvent('exitScene', () => {
-        return
-      })
-
-      unsubscribeEvent('startScene', () => {
-        return
-      })
-
-      unsubscribeEvent('stopScene', () => {
-        return
-      })
-
-      unsubscribeEvent('idleScene', () => {
-        return
-      })
-
-      unsubscribeEvent('loopScene', () => {
-        return
-      })
-    }
-  }, [])
-
-  useEffect(() => {
-    currentScene = context.settings.scene
-    dispatchEvent('exitScene')
-
-    return () => {
-      return
-    }
-  }, [context.settings.scene])
-
-  const setupCanvas = (canvas: HTMLCanvasElement, width: number, height: number) => {
-    if (renderer) {
+    if (!state.scene) {
       return
     }
 
-    canvasWidth = width
-    canvasHeight = height
+    const width = window.innerWidth
+    const height = window.innerHeight
 
-    const options: Partial<IRendererOptionsAuto> = {
-      view: canvas,
-      width: canvasWidth,
-      height: canvasHeight,
-      autoDensity: true,
-      antialias: true,
-      backgroundAlpha: 0,
-      resolution: window.devicePixelRatio || 1,
-    }
+    state.scene().resizeScene(width, height)
 
-    renderer = autoDetectRenderer(options)
-    requestAnimationFrame(renderScene)
-
-    window.addEventListener('resize', resizeCanvas)
-  }
-
-  const resizeCanvas = () => {
-    canvasWidth = window.innerWidth
-    canvasHeight = window.innerHeight
-
-    scene().resizeScene(canvasWidth, canvasHeight)
-    renderer.resize(canvasWidth, canvasHeight)
-  }
-
-  const enterScene = async () => {
-    clearTimeout(enterTimeout)
-    scene().resizeScene(canvasWidth, canvasHeight)
-
-    enterTimeout = setTimeout(async () => {
-      await transitionAnimation('enterAnimation')
-      dispatchEvent('idleScene')
+    state.enterTimeoutFn = setTimeout(async () => {
+      await animation.transition('enterAnimation', state.scene)
+      event.dispatch('idleScene')
     }, ENTER_SCENE_DELAY)
-  }
+  },
+  exit: async (newScene: Scenes) => {
+    await animation.transition('exitAnimation', state.scene)
+    await setScene(newScene)
+    event.dispatch('enterScene')
+  },
+  start: async () => {
+    sound.play('kalimba-f4')
+    await animation.transition('startAnimation', state.scene)
+  },
 
-  const exitScene = async () => {
-    await transitionAnimation('exitAnimation')
+  stop: async () => {
+    // sound.play('kalimba-b3')
+    await animation.transition('stopAnimation', state.scene)
+    event.dispatch('idleScene')
+  },
+  idle: async () => {
+    await animation.transition('idleAnimation', state.scene)
+  },
+  loop: async () => {
+    if (!state.scene) {
+      return
+    }
 
-    const sceneComponent = await import(`../scenes/${currentScene}.ts`)
-    scene = sceneComponent.default
-
-    dispatchEvent('enterScene')
-  }
-
-  const startScene = async () => {
-    playSound.play('kalimba-f4')
-    await transitionAnimation('startAnimation')
-  }
-
-  const stopScene = async () => {
-    playSound.play('kalimba-b3')
-    await transitionAnimation('stopAnimation')
-    dispatchEvent('idleScene')
-  }
-
-  const idleScene = async () => {
-    await transitionAnimation('idleAnimation')
-  }
-
-  const loopScene = async () => {
     const animations: Animation[] = []
-    const loops = scene()['loopAnimation']()
+    const loops = state.scene()['loopAnimation']()
 
-    const progress = loopProgress()
-    const durations = loopDurations(scene().durationFractions)
+    const durations = loopDurations(state.scene().durationFractions)
 
     // MARK: Cycle
-    if (loops.cycle && progress.step === 0 && progress.count === 0) {
+    if (loops.cycle && store.getProgress().step === 0 && store.getProgress().count === 0) {
       animations.push({
         ...loops.cycle,
         identifier: 'cycle',
         duration: durations.cycle,
-        transformations: loops.cycle.transformations[progress.step],
+        transformations: loops.cycle.transformations[store.getProgress().step],
       })
     }
 
     // MARK: Step
-    if (loops.step && progress.count === 0) {
-      playSound.play('kalimba-e4')
+    if (loops.step && store.getProgress().count === 0) {
+      // sound.play('kalimba-e4')
 
       animations.push({
         ...loops.step,
@@ -197,86 +148,60 @@ const useScene = () => {
         duration: durations.step,
         // TODO: check if stagger?
         stagger: durations.stagger,
-        transformations: loops.step.transformations[progress.step],
+        transformations: loops.step.transformations[store.getProgress().step],
       })
     }
 
     // MARK: Count
     if (loops.count) {
-      playSound.play('kalimba-e5')
+      // sound.play('kalimba-e5')
 
       animations.push({
         ...loops.count,
         identifier: 'count',
         duration: durations.count,
-        transformations: loops.count.transformations[progress.step],
+        transformations: loops.count.transformations[store.getProgress().step],
       })
     }
 
-    animateScene(animations)
-  }
-
-  const transitionAnimation = async (identifier: SceneAnimation) => {
-    try {
-      // TODO: uhh?
-      const transitionAnimation = (scene() as any)[identifier]()
-
-      // TODO: figure out the type for 'any' target
-      transitionAnimation.targets.forEach((target: any[]) => {
-        anime.remove(target)
-      })
-
-      await animateScene([
-        {
-          ...transitionAnimation,
-          identifier,
-        },
-      ])
-    } catch (error) {
-      // MARK: Scene has not been set yet
-      // console.warn(error)
-    }
-  }
-
-  const animateScene = async (animations: Animation[]) => {
-    // DEBUG:
-    console.debug({ animations })
-    console.debug({ running: anime.running })
-
-    const animationPromises: Promise<void>[] = []
-
-    animations.forEach((animation: Animation) => {
-      animationPromises.push(
-        anime({
-          targets: animation.targets,
-          ...animation.transformations,
-
-          duration: animation.duration ?? defaultAnimation.duration,
-          delay: animation.stagger ? anime.stagger(animation.stagger as number) : defaultAnimation.stagger,
-          easing: animation.easing ?? defaultAnimation.easing,
-          loop: animation.loop ?? defaultAnimation.loop,
-          direction: animation.direction ?? defaultAnimation.direction,
-        }).finished
-      )
-    })
-
-    await Promise.all(animationPromises)
-  }
-
-  const renderScene = () => {
-    requestAnimationFrame(renderScene)
-
-    if (!scene) {
-      return
-    }
-
-    scene().drawScene()
-    renderer.render(scene().container)
-  }
-
-  return {
-    setupCanvas,
-  }
+    animation.animate(animations)
+  },
 }
 
-export { useScene }
+const init = async () => {
+  event.subscribe('enterScene', () => {
+    sceneEvents.enter()
+  })
+
+  // TODO: figure out the type for 'any' event
+  event.subscribe('exitScene', (event: any) => {
+    sceneEvents.exit(event.detail.newScene)
+  })
+
+  event.subscribe('startScene', () => {
+    sceneEvents.start()
+  })
+
+  event.subscribe('stopScene', () => {
+    sceneEvents.stop()
+  })
+
+  event.subscribe('idleScene', () => {
+    sceneEvents.idle()
+  })
+
+  event.subscribe('loopScene', () => {
+    sceneEvents.loop()
+  })
+
+  if (!state.scene) {
+    await setScene(state.currentScene)
+  }
+
+  resizeCanvas()
+}
+
+init()
+
+export { setupCanvas }
+export default { setupCanvas }

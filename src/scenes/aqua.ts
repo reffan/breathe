@@ -8,35 +8,36 @@ container.interactiveChildren = false
 const ripples = new Graphics()
 container.addChild(ripples)
 
-const initialState = {
-  radius: 60,
-  opacity: 1,
-}
-
-const sceneState = {
-  ripples: [
-    {
-      radius: 0,
-      opacity: 0,
-    },
-    {
-      radius: 0,
-      opacity: 0,
-    },
-    {
-      radius: 0,
-      opacity: 0,
-    },
-  ],
+const state = {
+  initial: {
+    radius: 60,
+    opacity: 1,
+  },
+  scene: {
+    ripples: [
+      {
+        radius: 0,
+        opacity: 0,
+      },
+      {
+        radius: 0,
+        opacity: 0,
+      },
+      {
+        radius: 0,
+        opacity: 0,
+      },
+    ],
+  },
 }
 
 const aqua = (): SceneComponent => {
   const enterAnimation = (): Animation => {
     return {
-      targets: sceneState.ripples,
+      targets: state.scene.ripples,
       transformations: {
-        radius: [0, initialState.radius],
-        opacity: [0, initialState.opacity],
+        radius: [0, state.initial.radius],
+        opacity: [0, state.initial.opacity],
       },
       duration: 1080,
       stagger: 1080 * 0.18,
@@ -45,7 +46,7 @@ const aqua = (): SceneComponent => {
 
   const exitAnimation = (): Animation => {
     return {
-      targets: sceneState.ripples,
+      targets: state.scene.ripples,
       transformations: {
         radius: 0,
         opacity: 0,
@@ -57,32 +58,32 @@ const aqua = (): SceneComponent => {
 
   const startAnimation = (): Animation => {
     return {
-      targets: sceneState.ripples,
+      targets: state.scene.ripples,
       transformations: {
         radius: 24,
-        opacity: initialState.opacity,
+        opacity: state.initial.opacity,
       },
     }
   }
 
   const stopAnimation = (): Animation => {
     return {
-      targets: sceneState.ripples,
+      targets: state.scene.ripples,
       transformations: {
         radius: 24,
-        opacity: initialState.opacity,
+        opacity: state.initial.opacity,
       },
     }
   }
 
   const idleAnimation = (): Animation => {
     return {
-      targets: sceneState.ripples,
+      targets: state.scene.ripples,
       transformations: {
         // opacity: [0.84, 1],
         // radius: [20, 24],
-        radius: initialState.radius,
-        opacity: initialState.opacity,
+        radius: state.initial.radius,
+        opacity: state.initial.opacity,
       },
       // duration: 3600,
       // loop: true,
@@ -98,7 +99,7 @@ const aqua = (): SceneComponent => {
       //   transformations: [],
       // },
       step: {
-        targets: sceneState.ripples,
+        targets: state.scene.ripples,
         transformations: [
           {
             radius: 144,
@@ -112,7 +113,7 @@ const aqua = (): SceneComponent => {
         easing: 'easeInOutSine',
       },
       count: {
-        targets: sceneState.ripples,
+        targets: state.scene.ripples,
         transformations: [
           {},
           {
@@ -143,7 +144,7 @@ const aqua = (): SceneComponent => {
   const drawScene = () => {
     ripples.clear()
 
-    sceneState.ripples.forEach((ripple, index) => {
+    state.scene.ripples.forEach((ripple, index) => {
       ripples.lineStyle(3 / (index + 1), '#FFFFFF', ripple.opacity / (index + 1))
       ripples.drawCircle(0, 0, ripple.radius)
       ripples.closePath()

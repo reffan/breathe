@@ -11,4 +11,5 @@ sound.add('kalimba-f4', { url: './assets/audio/kalimba-f4.aac', volume: 0.5, pre
 sound.add('kalimba-c5', { url: './assets/audio/kalimba-c5.aac', volume: 0.5, preload: false })
 sound.add('kalimba-e5', { url: './assets/audio/kalimba-e5.aac', volume: 0.5, preload: false })
 
-export { sound as playSound }
+export { sound }
+export default { play: sound.play }

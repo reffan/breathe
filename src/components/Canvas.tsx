@@ -2,23 +2,26 @@ import React, { useContext, useEffect, useRef } from 'react'
 import { AppContext } from '@/types'
 
 import { Context } from '@/Context'
-import { useScene } from '@/libraries/scene'
+import event from '@/libraries/event'
+import { setupCanvas } from '@/libraries/scene'
 
 const Canvas = () => {
   const context = useContext<AppContext>(Context)
-  const { setupCanvas } = useScene()
-
   const canvas = useRef<HTMLCanvasElement>(null)
 
   useEffect(() => {
     if (canvas.current) {
-      setupCanvas(canvas.current, window.innerWidth, window.innerHeight)
+      setupCanvas(canvas.current)
     }
 
     return () => {
       // TODO: destroy canvas?
     }
-  }, [setupCanvas])
+  }, [])
+
+  useEffect(() => {
+    event.dispatch('exitScene', { newScene: context.settings.scene })
+  }, [context.settings.scene])
 
   // TODO: tween the colors?
   const backgroundColors = [

@@ -8,33 +8,34 @@ container.interactiveChildren = false
 
 const ripples = [new Graphics(), new Graphics(), new Graphics()]
 
-const initialState = {
-  radius: 60,
-  scale: 1,
-  opacity: 0.84,
-}
-
-const sceneState = {
-  ripples: [
-    {
-      scale: 0,
-      opacity: 1,
-    },
-    {
-      scale: 0,
-      opacity: 1,
-    },
-    {
-      scale: 0,
-      opacity: 1,
-    },
-  ],
+const state = {
+  initial: {
+    radius: 60,
+    scale: 1,
+    opacity: 0.84,
+  },
+  scene: {
+    ripples: [
+      {
+        scale: 0,
+        opacity: 1,
+      },
+      {
+        scale: 0,
+        opacity: 1,
+      },
+      {
+        scale: 0,
+        opacity: 1,
+      },
+    ],
+  },
 }
 
 ripples.forEach((ripple, index) => {
   ripple.clear()
   ripple.lineStyle(3 / (index + 1), '#FF0000')
-  ripple.drawCircle(0, 0, initialState.radius * initialState.scale)
+  ripple.drawCircle(0, 0, state.initial.radius * state.initial.scale)
   ripple.closePath()
 
   container.addChild(ripple)
@@ -43,10 +44,10 @@ ripples.forEach((ripple, index) => {
 const debug = (): SceneComponent => {
   const enterAnimation = (): Animation => {
     return {
-      targets: sceneState.ripples,
+      targets: state.scene.ripples,
       transformations: {
-        scale: [0, initialState.scale],
-        opacity: [0, initialState.opacity],
+        scale: [0, state.initial.scale],
+        opacity: [0, state.initial.opacity],
       },
       duration: 1800,
     }
@@ -54,7 +55,7 @@ const debug = (): SceneComponent => {
 
   const exitAnimation = (): Animation => {
     return {
-      targets: sceneState.ripples,
+      targets: state.scene.ripples,
       transformations: {
         scale: 0,
         opacity: 0,
@@ -65,7 +66,7 @@ const debug = (): SceneComponent => {
 
   const startAnimation = (): Animation => {
     return {
-      targets: sceneState.ripples,
+      targets: state.scene.ripples,
       transformations: {
         scale: 0.48,
       },
@@ -74,7 +75,7 @@ const debug = (): SceneComponent => {
 
   const stopAnimation = (): Animation => {
     return {
-      targets: sceneState.ripples,
+      targets: state.scene.ripples,
       transformations: {
         scale: 0.48,
       },
@@ -83,7 +84,7 @@ const debug = (): SceneComponent => {
 
   const idleAnimation = (): Animation => {
     return {
-      targets: sceneState.ripples,
+      targets: state.scene.ripples,
       transformations: {
         opacity: [0.84, 1],
         scale: [0.84, 1],
@@ -103,7 +104,7 @@ const debug = (): SceneComponent => {
       //   //
       // },
       step: {
-        targets: sceneState.ripples,
+        targets: state.scene.ripples,
         transformations: [
           {
             scale: 2.4,
@@ -117,7 +118,7 @@ const debug = (): SceneComponent => {
         easing: 'easeInOutSine',
       },
       count: {
-        targets: sceneState.ripples,
+        targets: state.scene.ripples,
         transformations: [
           {
             opacity: [0.84, 1],
@@ -151,8 +152,8 @@ const debug = (): SceneComponent => {
 
   const drawScene = () => {
     ripples.forEach((ripple, index) => {
-      ripple.scale.set(sceneState.ripples[index].scale, sceneState.ripples[index].scale)
-      ripple.alpha = sceneState.ripples[index].opacity / index
+      ripple.scale.set(state.scene.ripples[index].scale, state.scene.ripples[index].scale)
+      ripple.alpha = state.scene.ripples[index].opacity / index
     })
   }
 

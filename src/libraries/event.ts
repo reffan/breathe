@@ -1,17 +1,19 @@
-import { ProgressEvent, SceneEvent } from '@/types'
+import { AppContextEvent, LoopEvent, SceneEvent } from '@/types'
 
-const subscribeEvent = (name: ProgressEvent | SceneEvent, listener: EventListenerOrEventListenerObject) => {
+const subscribe = (name: AppContextEvent | LoopEvent | SceneEvent, listener: EventListenerOrEventListenerObject) => {
   document.addEventListener(name, listener)
 }
 
-const unsubscribeEvent = (name: ProgressEvent | SceneEvent, listener: EventListenerOrEventListenerObject) => {
+const unsubscribe = (name: AppContextEvent | LoopEvent | SceneEvent, listener: EventListenerOrEventListenerObject) => {
   document.removeEventListener(name, listener)
 }
 
-const dispatchEvent = (name: ProgressEvent | SceneEvent) => {
+const dispatch = (name: AppContextEvent | LoopEvent | SceneEvent, data = {}) => {
   // DEBUG:
-  console.debug(`Event: ${name}`)
-  document.dispatchEvent(new CustomEvent(name))
+  // console.debug(`Event: ${name}`, { data })
+
+  document.dispatchEvent(new CustomEvent(name, { detail: data }))
 }
 
-export { subscribeEvent, unsubscribeEvent, dispatchEvent }
+export { subscribe, unsubscribe, dispatch }
+export default { subscribe, unsubscribe, dispatch }

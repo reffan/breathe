@@ -4,7 +4,7 @@ const scenes: { name: string; scene: Scenes }[] = [
   // DEBUG:
   {
     name: 'DEBUG',
-    scene: 'debug',
+    scene: 'DEBUG',
   },
   {
     name: 'Aqua',

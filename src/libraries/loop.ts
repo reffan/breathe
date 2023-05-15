@@ -1,182 +1,133 @@
-import { useContext, useEffect } from 'react'
-import { AppContext, Settings, Progress, DurationFractions } from '@/types'
+import { Settings, Progress, Durations, DurationFractions } from '@/types'
 
-import { Context } from '@/Context'
-import { subscribeEvent, unsubscribeEvent, dispatchEvent } from '@/libraries/event'
+import store from '@/store'
+import event from '@/libraries/event'
 import { TOTAL_COUNTDOWN_COUNTS, TOTAL_PATTERN_STEPS } from '@/utilities/constants'
-import { defaultProgress, defaultSettings } from '@/utilities/defaults'
+import { defaultSettings, defaultProgress } from '@/utilities/defaults'
 
-// MARK: Because the context doesn't stay reactive...
-let settings: Settings = defaultSettings
-let progress: Progress = defaultProgress
-let countDuration = 1000
+type State = {
+  settings: Settings
+  loopIntervalFn?: ReturnType<typeof setInterval>
+}
 
-let loopInterval: ReturnType<typeof setInterval>
+const state: State = {
+  settings: defaultSettings,
+  loopIntervalFn: undefined,
+}
 
-let isSingleton = false
+const loop = {
+  start: (currentSettings: Settings) => {
+    state.settings = currentSettings
+    loop.update()
 
-const useLoop = () => {
-  const context = useContext<AppContext>(Context)
-  settings = { ...context.settings }
-  progress = { ...context.progress }
+    const countDuration = 1000 / state.settings.speed
 
-  useEffect(() => {
-    settings = { ...context.settings }
-    countDuration = 1000 / settings.speed
-
-    return () => {
-      return
-    }
-  }, [context.settings])
-
-  useEffect(() => {
-    progress = { ...context.progress }
-
-    return () => {
-      return
-    }
-  }, [context.progress])
-
-  useEffect(() => {
-    if (!isSingleton) {
-      subscribeEvent('startLoop', () => {
-        startLoop()
-      })
-
-      subscribeEvent('resetLoop', () => {
-        resetLoop()
-      })
+    state.loopIntervalFn = setInterval(() => {
+      loop.update()
+    }, countDuration)
+  },
+  update: () => {
+    if (store.getProgress().countdown < TOTAL_COUNTDOWN_COUNTS) {
+      advance.countdown()
     }
 
-    isSingleton = true
+    if (store.getProgress().countdown >= TOTAL_COUNTDOWN_COUNTS) {
+      if (store.getProgress().cycle < state.settings.cycles) {
+        advance.count()
+      } else {
+        const countDuration = 1000 / state.settings.speed
 
-    return () => {
-      unsubscribeEvent('startLoop', () => {
-        return
-      })
+        // TODO: implement this
+        // TODO: why does all of this happen so late?
+        // TODO: how does this one get cleared?
+        setTimeout(() => {
+          // TODO: implement
+          // context.setIsPlaying((): boolean => {
+          //   return false
+          // })
 
-      unsubscribeEvent('resetLoop', () => {
-        return
-      })
-    }
-  }, [])
-
-  const advanceCountdown = () => {
-    context.setProgress((currentProgress: Progress): Progress => {
-      return {
-        ...currentProgress,
-        countdown: currentProgress.countdown + 1,
+          event.dispatch('stopScene')
+          loop.reset()
+        }, countDuration * 2)
       }
-    })
-  }
+    }
+  },
+  reset: () => {
+    clearInterval(state.loopIntervalFn)
+    store.setProgress(defaultProgress)
+  },
+}
 
-  // TODO: double check this logic
-  const advanceCount = () => {
-    if (progress.cycle < settings.cycles) {
-      progress = advanceCountLogic()
-
-      context.setProgress((currentProgress: Progress): Progress => {
-        return advanceCountLogic(currentProgress)
-      })
-
-      // TODO: don't like how Scene is tightly coupled?
-      dispatchEvent('loopScene')
-      return
+const advance = {
+  countdown: () => {
+    const newProgress: Progress = {
+      ...store.getProgress(),
     }
 
-    // TODO: don't like how Scene is tightly coupled?
+    // MARK: Advance the countdown
+    newProgress.countdown++
 
-    // TODO: why does all of this happen so late?
-    // TODO: how does this one get cleared?
-    setTimeout(() => {
-      context.setIsPlaying((): boolean => {
-        return false
-      })
-
-      dispatchEvent('stopScene')
-
-      resetLoop()
-    }, countDuration * 2)
-  }
-
-  // TODO: this is quite ugly, but happens because of late re-render
-  const advanceCountLogic = (currentProgress: Progress = progress): Progress => {
-    const updateProgress = { ...currentProgress }
+    store.setProgress(newProgress)
+  },
+  count: () => {
+    const newProgress: Progress = {
+      ...store.getProgress(),
+    }
 
     // MARK: Advance the count
-    updateProgress.count++
+    newProgress.count++
 
     // MARK: Advance the step
-    if (updateProgress.count > settings.pattern[updateProgress.step] - 1) {
-      updateProgress.step++
+    if (newProgress.count > state.settings.pattern[newProgress.step] - 1) {
+      newProgress.step++
 
       // MARK: Skip to next step if step has no counts in it
-      while (settings.pattern[updateProgress.step] == 0 && updateProgress.step < TOTAL_PATTERN_STEPS) {
-        updateProgress.step++
+      while (state.settings.pattern[newProgress.step] == 0 && newProgress.step < TOTAL_PATTERN_STEPS) {
+        newProgress.step++
       }
 
-      updateProgress.count = 0
+      newProgress.count = 0
     }
 
     // MARK: Advance the cycle
-    if (updateProgress.step >= TOTAL_PATTERN_STEPS) {
-      updateProgress.cycle++
-
-      updateProgress.step = 0
+    if (newProgress.step >= TOTAL_PATTERN_STEPS) {
+      newProgress.cycle++
+      newProgress.step = 0
     }
 
-    return updateProgress
-  }
+    store.setProgress(newProgress)
+    event.dispatch('loopScene')
+  },
+}
 
-  const startLoop = () => {
-    updateLoop()
-
-    loopInterval = setInterval(() => {
-      updateLoop()
-    }, countDuration)
-  }
-
-  const updateLoop = () => {
-    if (progress.countdown < TOTAL_COUNTDOWN_COUNTS) {
-      advanceCountdown()
-    }
-
-    if (progress.countdown >= TOTAL_COUNTDOWN_COUNTS - 1) {
-      advanceCount()
-    }
-  }
-
-  const resetLoop = () => {
-    clearInterval(loopInterval)
-
-    context.setProgress((): Progress => {
-      return defaultProgress
-    })
-  }
-
-  const loopDurations = (durationFractions: DurationFractions, safetyFraction = 0.96) => {
-    const countDuration = 1000 / settings.speed
-    const countsInStep = settings.pattern[progress.step]
-    const countsInCycle = settings.pattern.reduce((totalCounts, stepCounts) => {
-      return totalCounts + stepCounts
-    }, 0)
-
-    return {
-      cycle: countsInCycle * countDuration * durationFractions.cycle * safetyFraction,
-      step: countsInStep * countDuration * durationFractions.step * safetyFraction,
-      count: countDuration * durationFractions.count * safetyFraction,
-      stagger: countDuration * durationFractions.stagger * safetyFraction,
-    }
-  }
-
-  const loopProgress = () => {
-    return progress
-  }
+// TODO: refactor the name
+const loopDurations = (durationFractions: DurationFractions, safetyFraction = 0.96): Durations => {
+  const countDuration = 1000 / state.settings.speed
+  const countsInStep = state.settings.pattern[store.getProgress().step]
+  const countsInCycle = state.settings.pattern.reduce((totalCounts, stepCounts) => {
+    return totalCounts + stepCounts
+  }, 0)
 
   return {
-    loopDurations,
-    loopProgress,
+    cycle: countsInCycle * countDuration * durationFractions.cycle * safetyFraction,
+    step: countsInStep * countDuration * durationFractions.step * safetyFraction,
+    count: countDuration * durationFractions.count * safetyFraction,
+    stagger: countDuration * durationFractions.stagger * safetyFraction,
   }
 }
 
-export { useLoop }
+const init = async () => {
+  // TODO: figure out the type for 'any' event
+  event.subscribe('startLoop', (event: any) => {
+    loop.start(event.detail.currentSettings)
+  })
+
+  event.subscribe('resetLoop', () => {
+    loop.reset()
+  })
+}
+
+init()
+
+export { loopDurations }
+export default { loopDurations }
