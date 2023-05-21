@@ -1,89 +1,175 @@
 import { ICanvas, IRenderer, IRendererOptionsAuto, autoDetectRenderer } from 'pixi.js'
-import { SceneEvents, Scene, Scenes, Animation, Sounds } from '@/types'
+import { SceneEvents, Scene, Animation, Sounds } from '@/types'
 
-import store from '@/store'
-import event from '@/libraries/event'
-import animation from '@/libraries/animation'
-import sound from '@/libraries/sound'
+import { store } from '@/libraries/store'
+import { event } from '@/libraries/event'
+import { animation } from '@/libraries/animation'
+import { sound } from '@/libraries/sound'
 import { loopDurations } from '@/libraries/loop'
-import { defaultSettings } from '@/utilities/defaults'
 import { ENTER_SCENE_DELAY } from '@/utilities/constants'
 
 type State = {
   renderer?: IRenderer<ICanvas>
   scene?: Scene
-  currentScene: Scenes
   enterTimeoutFn?: ReturnType<typeof setTimeout>
 }
 
 const state: State = {
   renderer: undefined,
   scene: undefined,
-  currentScene: defaultSettings.scene,
   enterTimeoutFn: undefined,
 }
 
-const setupCanvas = (canvas: HTMLCanvasElement) => {
-  if (state.renderer) {
-    return
-  }
+const view = {
+  setup: (canvas: HTMLCanvasElement) => {
+    if (state.renderer) {
+      return
+    }
 
-  const width = window.innerWidth
-  const height = window.innerHeight
+    const width = window.innerWidth
+    const height = window.innerHeight
 
-  const options: Partial<IRendererOptionsAuto> = {
-    view: canvas,
-    width: width,
-    height: height,
-    autoDensity: true,
-    antialias: true,
-    backgroundAlpha: 0,
-    resolution: window.devicePixelRatio || 1,
-  }
+    const options: Partial<IRendererOptionsAuto> = {
+      view: canvas,
+      width: width,
+      height: height,
+      autoDensity: true,
+      antialias: true,
+      backgroundAlpha: 0,
+      resolution: window.devicePixelRatio || 1,
+    }
 
-  state.renderer = autoDetectRenderer(options)
-  requestAnimationFrame(renderScene)
+    state.renderer = autoDetectRenderer(options)
+    requestAnimationFrame(view.render)
 
-  window.addEventListener('resize', resizeCanvas)
+    window.addEventListener('resize', view.resize)
+  },
+  resize: () => {
+    const width = window.innerWidth
+    const height = window.innerHeight
+
+    if (state.renderer) {
+      state.renderer.resize(width, height)
+    }
+
+    if (state.scene) {
+      state.scene.resizeScene(width, height)
+    }
+  },
+  render: () => {
+    requestAnimationFrame(view.render)
+
+    if (!state.renderer) {
+      return
+    }
+
+    if (!state.scene) {
+      return
+    }
+
+    state.scene.drawScene()
+    state.renderer.render(state.scene.container())
+  },
 }
 
-const resizeCanvas = () => {
-  const width = window.innerWidth
-  const height = window.innerHeight
+const sceneEvents = {
+  enterScene: async () => {
+    clearTimeout(state.enterTimeoutFn)
 
-  if (state.renderer) {
-    state.renderer.resize(width, height)
-  }
+    if (!state.scene) {
+      return
+    }
 
-  if (state.scene) {
+    const width = window.innerWidth
+    const height = window.innerHeight
+
     state.scene.resizeScene(width, height)
-  }
+
+    state.enterTimeoutFn = setTimeout(async () => {
+      await sceneTransition('enterScene')
+      event.dispatch('idleScene')
+    }, ENTER_SCENE_DELAY)
+  },
+  exitScene: async () => {
+    await sceneTransition('exitScene')
+
+    const sceneComponent = await import(`../scenes/${store.getState().settings.scene}.ts`)
+    state.scene = sceneComponent.default
+
+    event.dispatch('enterScene')
+  },
+  startScene: async () => {
+    await sceneTransition('startScene')
+  },
+
+  stopScene: async () => {
+    await sceneTransition('stopScene')
+    event.dispatch('idleScene')
+  },
+  idleScene: async () => {
+    await sceneTransition('idleScene')
+  },
+  loopScene: async () => {
+    if (!state.scene) {
+      return
+    }
+
+    const stage = state.scene.stages['loopScene']
+    const durations = loopDurations(state.scene.durationFractions)
+
+    const animations: Animation[] = []
+    const sounds: Sounds[] = []
+
+    // MARK: Cycle
+    if (stage.cycle && store.getState().progress.step === 0 && store.getState().progress.count === 0) {
+      if (stage.cycle.sound) {
+        sounds.push(stage.cycle.sound)
+      }
+
+      animations.push({
+        ...stage.cycle.animation,
+        identifier: 'cycle',
+        duration: durations.cycle,
+        transformations: stage.cycle.animation.transformations[store.getState().progress.step],
+      })
+    }
+
+    // MARK: Step
+    if (stage.step && store.getState().progress.count === 0) {
+      if (stage.step.sound) {
+        sounds.push(stage.step.sound)
+      }
+
+      animations.push({
+        ...stage.step.animation,
+        identifier: 'step',
+        duration: durations.step,
+        // TODO: check if stagger?
+        stagger: durations.stagger,
+        transformations: stage.step.animation.transformations[store.getState().progress.step],
+      })
+    }
+
+    // MARK: Count
+    if (stage.count) {
+      if (stage.count.sound) {
+        sounds.push(stage.count.sound)
+      }
+
+      animations.push({
+        ...stage.count.animation,
+        identifier: 'count',
+        duration: durations.count,
+        transformations: stage.count.animation.transformations[store.getState().progress.step],
+      })
+    }
+
+    sound.play(sounds, store.getState().isMuted)
+    animation.animate(animations)
+  },
 }
 
-const renderScene = () => {
-  requestAnimationFrame(renderScene)
-
-  if (!state.renderer) {
-    return
-  }
-
-  if (!state.scene) {
-    return
-  }
-
-  state.scene.drawScene()
-  state.renderer.render(state.scene.container())
-}
-
-const setScene = async (newScene: Scenes) => {
-  const sceneComponent = await import(`../scenes/${newScene}.ts`)
-
-  state.scene = sceneComponent.default
-  state.currentScene = newScene
-}
-
-// TODO: refactor the name
-const triggerStage = async (identifier: SceneEvents) => {
+const sceneTransition = async (identifier: SceneEvents) => {
   if (!state.scene) {
     return
   }
@@ -100,8 +186,7 @@ const triggerStage = async (identifier: SceneEvents) => {
   })
 
   if (stage.sound) {
-    // TODO: implement isMuted
-    sound.play([stage.sound], false)
+    sound.play([stage.sound], store.getState().isMuted)
   }
 
   await animation.animate([
@@ -112,135 +197,24 @@ const triggerStage = async (identifier: SceneEvents) => {
   ])
 }
 
-const sceneEvents = {
-  enter: async () => {
-    clearTimeout(state.enterTimeoutFn)
-
-    if (!state.scene) {
-      return
-    }
-
-    const width = window.innerWidth
-    const height = window.innerHeight
-
-    state.scene.resizeScene(width, height)
-
-    state.enterTimeoutFn = setTimeout(async () => {
-      await triggerStage('enterScene')
-      event.dispatch('idleScene')
-    }, ENTER_SCENE_DELAY)
-  },
-  exit: async (newScene: Scenes) => {
-    await triggerStage('exitScene')
-    await setScene(newScene)
-    event.dispatch('enterScene')
-  },
-  start: async () => {
-    await triggerStage('startScene')
-  },
-
-  stop: async () => {
-    await triggerStage('stopScene')
-    event.dispatch('idleScene')
-  },
-  idle: async () => {
-    await triggerStage('idleScene')
-  },
-  loop: async () => {
-    if (!state.scene) {
-      return
-    }
-
-    const stage = state.scene.stages['loopScene']
-    const durations = loopDurations(state.scene.durationFractions)
-
-    const animations: Animation[] = []
-    const sounds: Sounds[] = []
-
-    // MARK: Cycle
-    if (stage.cycle && store.getProgress().step === 0 && store.getProgress().count === 0) {
-      if (stage.cycle.sound) {
-        sounds.push(stage.cycle.sound)
-      }
-
-      animations.push({
-        ...stage.cycle.animation,
-        identifier: 'cycle',
-        duration: durations.cycle,
-        transformations: stage.cycle.animation.transformations[store.getProgress().step],
-      })
-    }
-
-    // MARK: Step
-    if (stage.step && store.getProgress().count === 0) {
-      if (stage.step.sound) {
-        sounds.push(stage.step.sound)
-      }
-
-      animations.push({
-        ...stage.step.animation,
-        identifier: 'step',
-        duration: durations.step,
-        // TODO: check if stagger?
-        stagger: durations.stagger,
-        transformations: stage.step.animation.transformations[store.getProgress().step],
-      })
-    }
-
-    // MARK: Count
-    if (stage.count) {
-      if (stage.count.sound) {
-        sounds.push(stage.count.sound)
-      }
-
-      animations.push({
-        ...stage.count.animation,
-        identifier: 'count',
-        duration: durations.count,
-        transformations: stage.count.animation.transformations[store.getProgress().step],
-      })
-    }
-
-    // TODO: implement isMuted
-    sound.play(sounds, false)
-    animation.animate(animations)
-  },
-}
-
 const init = async () => {
-  event.subscribe('enterScene', () => {
-    sceneEvents.enter()
-  })
+  const events: SceneEvents[] = ['enterScene', 'exitScene', 'startScene', 'stopScene', 'idleScene', 'loopScene']
 
-  // TODO: figure out the type for 'any' event
-  event.subscribe('exitScene', (event: any) => {
-    sceneEvents.exit(event.detail.newScene)
-  })
-
-  event.subscribe('startScene', () => {
-    sceneEvents.start()
-  })
-
-  event.subscribe('stopScene', () => {
-    sceneEvents.stop()
-  })
-
-  event.subscribe('idleScene', () => {
-    sceneEvents.idle()
-  })
-
-  event.subscribe('loopScene', () => {
-    sceneEvents.loop()
+  events.forEach((sceneEvent) => {
+    event.subscribe(sceneEvent, () => {
+      sceneEvents[sceneEvent]()
+    })
   })
 
   if (!state.scene) {
-    await setScene(state.currentScene)
+    const sceneComponent = await import(`../scenes/${store.getState().settings.scene}.ts`)
+    state.scene = sceneComponent.default
   }
 
-  resizeCanvas()
+  view.resize()
 }
 
 init()
 
-export { setupCanvas }
-export default { setupCanvas }
+export { view }
+export default { view }

@@ -1,18 +1,18 @@
-import { Events } from '@/types'
+import { LoopEvents, SceneEvents } from '@/types'
 
-const subscribe = (name: Events, listener: EventListenerOrEventListenerObject) => {
-  document.addEventListener(name, listener)
+const event = {
+  subscribe: (name: LoopEvents | SceneEvents, listener: EventListenerOrEventListenerObject) => {
+    document.addEventListener(name, listener)
+  },
+  unsubscribe: (name: LoopEvents | SceneEvents, listener: EventListenerOrEventListenerObject) => {
+    document.removeEventListener(name, listener)
+  },
+  dispatch: (name: LoopEvents | SceneEvents) => {
+    // DEBUG:
+    // console.debug(`Event: ${name}`)
+    document.dispatchEvent(new CustomEvent(name))
+  },
 }
 
-const unsubscribe = (name: Events, listener: EventListenerOrEventListenerObject) => {
-  document.removeEventListener(name, listener)
-}
-
-const dispatch = (name: Events, data = {}) => {
-  // DEBUG:
-  // console.debug(`Event: ${name}`, { data })
-  document.dispatchEvent(new CustomEvent(name, { detail: data }))
-}
-
-export { subscribe, unsubscribe, dispatch }
-export default { subscribe, unsubscribe, dispatch }
+export { event }
+export default { event }

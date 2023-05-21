@@ -1,38 +1,30 @@
-import React, { ChangeEvent, useContext } from 'react'
-import { AppContext, Settings, Scenes } from '@/types'
+import React, { ChangeEvent } from 'react'
+import { Store, Settings, Scenes } from '@/types'
 
-import { Context } from '@/Context'
+import { useStore } from '@/libraries/store'
 import { scenes } from '@/utilities/scenes'
 import { background } from '@/utilities/labels'
 
 const Scene = () => {
-  const context = useContext<AppContext>(Context)
+  const settings = useStore((state: Store) => state.settings)
+  const updateSettings = useStore((state: Store) => state.updateSettings)
 
   const changeScene = (scene: Scenes) => {
-    context.setSettings((currentSettings: Settings): Settings => {
-      return {
-        ...currentSettings,
-        scene: scene,
-      }
-    })
+    const newSettings: Settings = { ...settings }
+    newSettings.scene = scene
+    updateSettings(newSettings)
   }
 
-  const changeBackground = (event: ChangeEvent<HTMLInputElement>, step: number) => {
-    context.setSettings((currentSettings: Settings): Settings => {
-      const background = currentSettings.background
-      background[step] = +event.target.value
-
-      return {
-        ...currentSettings,
-        background,
-      }
-    })
+  const changeBackground = (event: ChangeEvent<HTMLInputElement>, value: number) => {
+    const newSettings: Settings = { ...settings }
+    newSettings.background[value] = +event.target.value
+    updateSettings(newSettings)
   }
 
   return (
     <>
       <h2>Scene</h2>
-      <span className='subtitle'>Current Scene: {context.settings.scene}</span>
+      <span className='subtitle'>Current Scene: {settings.scene}</span>
       <div className='controls'>
         <ul className='scenes-switcher'>
           {scenes.map((scene, index) => {
@@ -44,7 +36,7 @@ const Scene = () => {
                     changeScene(scene.scene)
                   }}
                   // prettier-ignore
-                  className={['scenes-switch', context.settings.scene === scene.scene ? 'active' : 'inactive'].join(' ')}
+                  className={['scenes-switch', settings.scene === scene.scene ? 'active' : 'inactive'].join(' ')}
                 >
                   {scene.name}
                 </button>
@@ -63,7 +55,7 @@ const Scene = () => {
                 </div>
                 <div className='layout-column align-end'>
                   <span>
-                    {context.settings.background[index]}
+                    {settings.background[index]}
                     {/* {index === 0 ? '°' : '%'} */}
                   </span>
                 </div>
@@ -78,7 +70,7 @@ const Scene = () => {
                 onChange={(e) => {
                   changeBackground(e, index)
                 }}
-                defaultValue={context.settings.background[index]}
+                defaultValue={settings.background[index]}
               />
             </div>
           )

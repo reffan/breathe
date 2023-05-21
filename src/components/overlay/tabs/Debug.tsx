@@ -1,22 +1,23 @@
-import React, { useContext } from 'react'
-import { AppContext } from '@/types'
+import React from 'react'
+import { Store } from '@/types'
 
-import { Context } from '@/Context'
+import { useStore } from '@/libraries/store'
 
 const Debug = () => {
-  const context = useContext<AppContext>(Context)
+  const isPlaying = useStore((state: Store) => state.isPlaying)
+  const isMuted = useStore((state: Store) => state.isMuted)
+  const settings = useStore((state: Store) => state.settings)
+  const progress = useStore((state: Store) => state.progress)
 
   return (
     <>
       <h2>DEBUG</h2>
-      <h3>isPlaying</h3>
-      <pre>{JSON.stringify(context.isPlaying, null, 2)}</pre>
-      <h3>isMuted</h3>
-      <pre>{JSON.stringify(context.isMuted, null, 2)}</pre>
+      <pre>isPlaying: {JSON.stringify(isPlaying, null, 2)}</pre>
+      <pre>isMuted: {JSON.stringify(isMuted, null, 2)}</pre>
       <h3>Settings</h3>
-      <pre>{JSON.stringify(context.settings, null, 2)}</pre>
+      <pre>{JSON.stringify(settings, null, 2)}</pre>
       <h3>Progress</h3>
-      <pre>{JSON.stringify(context.progress, null, 2)}</pre>
+      <pre>{JSON.stringify(progress, null, 2)}</pre>
     </>
   )
 }

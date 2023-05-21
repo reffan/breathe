@@ -1,36 +1,31 @@
-import React, { ChangeEvent, useContext } from 'react'
-import { AppContext, Settings } from '@/types'
+import React, { ChangeEvent } from 'react'
+import { Store, Settings } from '@/types'
 
-import { Context } from '@/Context'
+import { useStore } from '@/libraries/store'
 
 const Speed = () => {
-  const context = useContext<AppContext>(Context)
+  const settings = useStore((state: Store) => state.settings)
+  const updateSettings = useStore((state: Store) => state.updateSettings)
 
   const changeSpeed = (event: ChangeEvent<HTMLInputElement>) => {
-    context.setSettings((currentSettings: Settings): Settings => {
-      return {
-        ...currentSettings,
-        speed: +event.target.value,
-      }
-    })
+    const newSettings: Settings = { ...settings }
+    newSettings.speed = +event.target.value
+    updateSettings(newSettings)
   }
 
   const changeCycles = (event: ChangeEvent<HTMLInputElement>) => {
-    context.setSettings((currentSettings: Settings): Settings => {
-      return {
-        ...currentSettings,
-        cycles: +event.target.value,
-      }
-    })
+    const newSettings: Settings = { ...settings }
+    newSettings.cycles = +event.target.value
+    updateSettings(newSettings)
   }
 
   const durationText = () => {
-    const countsInCycle = context.settings.pattern.reduce((totalCounts, stepCounts) => {
+    const countsInCycle = settings.pattern.reduce((totalCounts, stepCounts) => {
       return totalCounts + stepCounts
     }, 0)
 
-    const countDuration = 1 / context.settings.speed
-    const totalDuration = Math.round((context.settings.cycles * countsInCycle * countDuration) / 60)
+    const countDuration = 1 / settings.speed
+    const totalDuration = Math.round((settings.cycles * countsInCycle * countDuration) / 60)
 
     return `${totalDuration} min${totalDuration != 1 ? 's' : ''}.`
   }
@@ -47,7 +42,7 @@ const Speed = () => {
             </div>
             <div className='layout-column align-end'>
               <span>
-                {context.settings.speed}
+                {settings.speed}
                 {/* {'x'} */}
               </span>
             </div>
@@ -60,7 +55,7 @@ const Speed = () => {
             min='0.5'
             max='2.0'
             onChange={changeSpeed}
-            defaultValue={context.settings.speed}
+            defaultValue={settings.speed}
           />
         </div>
         <div className='controls-range'>
@@ -70,7 +65,7 @@ const Speed = () => {
             </div>
             <div className='layout-column align-end'>
               <span>
-                {context.settings.cycles}
+                {settings.cycles}
                 {/* {'x'} */}
               </span>
             </div>
@@ -83,7 +78,7 @@ const Speed = () => {
             min='4'
             max='240'
             onChange={changeCycles}
-            defaultValue={context.settings.cycles}
+            defaultValue={settings.cycles}
           />
         </div>
       </div>

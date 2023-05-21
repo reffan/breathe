@@ -1,88 +1,38 @@
-import { Settings, Progress, Durations, DurationFractions } from '@/types'
+import { Progress, LoopEvents, Durations, DurationFractions } from '@/types'
 
-import store from '@/store'
-import event from '@/libraries/event'
+import { store } from '@/libraries/store'
+import { event } from '@/libraries/event'
 import { TOTAL_COUNTDOWN_COUNTS, TOTAL_PATTERN_STEPS } from '@/utilities/constants'
-import { defaultSettings, defaultProgress } from '@/utilities/defaults'
+import { defaultProgress } from '@/utilities/defaults'
 
 type State = {
-  settings: Settings
   loopIntervalFn?: ReturnType<typeof setInterval>
 }
 
 const state: State = {
-  settings: defaultSettings,
   loopIntervalFn: undefined,
-}
-
-const loop = {
-  start: (currentSettings: Settings) => {
-    state.settings = currentSettings
-    loop.update()
-
-    const countDuration = 1000 / state.settings.speed
-
-    state.loopIntervalFn = setInterval(() => {
-      loop.update()
-    }, countDuration)
-  },
-  update: () => {
-    if (store.getProgress().countdown < TOTAL_COUNTDOWN_COUNTS) {
-      advance.countdown()
-    }
-
-    if (store.getProgress().countdown >= TOTAL_COUNTDOWN_COUNTS) {
-      if (store.getProgress().cycle < state.settings.cycles) {
-        advance.count()
-      } else {
-        const countDuration = 1000 / state.settings.speed
-
-        // TODO: implement this
-        // TODO: why does all of this happen so late?
-        // TODO: how does this one get cleared?
-        setTimeout(() => {
-          // TODO: implement
-          // context.setIsPlaying((): boolean => {
-          //   return false
-          // })
-
-          event.dispatch('stopScene')
-          loop.reset()
-        }, countDuration * 2)
-      }
-    }
-  },
-  reset: () => {
-    clearInterval(state.loopIntervalFn)
-    store.setProgress(defaultProgress)
-  },
 }
 
 const advance = {
   countdown: () => {
-    const newProgress: Progress = {
-      ...store.getProgress(),
-    }
+    const newProgress: Progress = { ...store.getState().progress }
 
     // MARK: Advance the countdown
     newProgress.countdown++
-
-    store.setProgress(newProgress)
+    store.getState().updateProgress(newProgress)
   },
   count: () => {
-    const newProgress: Progress = {
-      ...store.getProgress(),
-    }
+    const newProgress: Progress = { ...store.getState().progress }
 
     // MARK: Advance the count
     newProgress.count++
 
     // MARK: Advance the step
-    if (newProgress.count > state.settings.pattern[newProgress.step] - 1) {
+    if (newProgress.count > store.getState().settings.pattern[newProgress.step] - 1) {
       newProgress.step++
 
       // MARK: Skip to next step if step has no counts in it
-      while (state.settings.pattern[newProgress.step] == 0 && newProgress.step < TOTAL_PATTERN_STEPS) {
+      while (store.getState().settings.pattern[newProgress.step] == 0 && newProgress.step < TOTAL_PATTERN_STEPS) {
         newProgress.step++
       }
 
@@ -95,16 +45,54 @@ const advance = {
       newProgress.step = 0
     }
 
-    store.setProgress(newProgress)
+    store.getState().updateProgress(newProgress)
     event.dispatch('loopScene')
+  },
+}
+
+const loopEvents = {
+  startLoop: () => {
+    loopEvents.updateLoop()
+
+    const countDuration = 1000 / store.getState().settings.speed
+
+    state.loopIntervalFn = setInterval(() => {
+      loopEvents.updateLoop()
+    }, countDuration)
+  },
+  updateLoop: () => {
+    if (store.getState().progress.countdown < TOTAL_COUNTDOWN_COUNTS) {
+      advance.countdown()
+    }
+
+    if (store.getState().progress.countdown >= TOTAL_COUNTDOWN_COUNTS) {
+      if (store.getState().progress.cycle < store.getState().settings.cycles) {
+        advance.count()
+      } else {
+        // const countDuration = 1000 / store.getState().settings.speed
+
+        // TODO: why does all of this happen so late?
+        // TODO: how does this one get cleared?
+        // setTimeout(() => {
+        store.getState().togglePlaying()
+
+        event.dispatch('stopScene')
+        loopEvents.resetLoop()
+        // }, countDuration * 2)
+      }
+    }
+  },
+  resetLoop: () => {
+    clearInterval(state.loopIntervalFn)
+    store.getState().updateProgress(defaultProgress)
   },
 }
 
 // TODO: refactor the name
 const loopDurations = (durationFractions: DurationFractions, safetyFraction = 0.96): Durations => {
-  const countDuration = 1000 / state.settings.speed
-  const countsInStep = state.settings.pattern[store.getProgress().step]
-  const countsInCycle = state.settings.pattern.reduce((totalCounts, stepCounts) => {
+  const countDuration = 1000 / store.getState().settings.speed
+  const countsInStep = store.getState().settings.pattern[store.getState().progress.step]
+  const countsInCycle = store.getState().settings.pattern.reduce((totalCounts, stepCounts) => {
     return totalCounts + stepCounts
   }, 0)
 
@@ -117,13 +105,12 @@ const loopDurations = (durationFractions: DurationFractions, safetyFraction = 0.
 }
 
 const init = async () => {
-  // TODO: figure out the type for 'any' event
-  event.subscribe('startLoop', (event: any) => {
-    loop.start(event.detail.currentSettings)
-  })
+  const events: LoopEvents[] = ['startLoop', 'resetLoop']
 
-  event.subscribe('resetLoop', () => {
-    loop.reset()
+  events.forEach((loopEvent) => {
+    event.subscribe(loopEvent, () => {
+      loopEvents[loopEvent]()
+    })
   })
 }
 

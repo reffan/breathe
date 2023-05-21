@@ -1,28 +1,23 @@
-import React, { ChangeEvent, useContext } from 'react'
-import { AppContext, Settings } from '@/types'
+import React, { ChangeEvent } from 'react'
+import { Store, Settings } from '@/types'
 
-import { Context } from '@/Context'
+import { useStore } from '@/libraries/store'
 import { steps } from '@/utilities/labels'
 
 const Pattern = () => {
-  const context = useContext<AppContext>(Context)
+  const settings = useStore((state: Store) => state.settings)
+  const updateSettings = useStore((state: Store) => state.updateSettings)
 
   const changePattern = (event: ChangeEvent<HTMLInputElement>, step: number) => {
-    context.setSettings((currentSettings: Settings): Settings => {
-      const pattern = currentSettings.pattern
-      pattern[step] = +event.target.value
-
-      return {
-        ...currentSettings,
-        pattern,
-      }
-    })
+    const newSettings: Settings = { ...settings }
+    newSettings.pattern[step] = +event.target.value
+    updateSettings(newSettings)
   }
 
   return (
     <>
       <h2>Breathing Pattern</h2>
-      <span className='subtitle'>Current Pattern: {context.settings.pattern.join(' / ')}</span>
+      <span className='subtitle'>Current Pattern: {settings.pattern.join(' : ')}</span>
       <div className='controls'>
         {steps.map((stepLabel, index) => {
           return (
@@ -32,7 +27,7 @@ const Pattern = () => {
                   <label htmlFor={`pattern-${index}`}>{stepLabel}</label>
                 </div>
                 <div className='layout-column align-end'>
-                  <span>{context.settings.pattern[index]}</span>
+                  <span>{settings.pattern[index]}</span>
                 </div>
               </div>
               <input
@@ -45,7 +40,7 @@ const Pattern = () => {
                 onChange={(e) => {
                   changePattern(e, index)
                 }}
-                defaultValue={context.settings.pattern[index]}
+                defaultValue={settings.pattern[index]}
               />
             </div>
           )

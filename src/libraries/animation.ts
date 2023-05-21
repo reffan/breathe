@@ -3,35 +3,36 @@ import { Animation } from '@/types'
 
 import { defaultAnimation } from '@/utilities/defaults'
 
-const animate = async (animations: Animation[]) => {
-  // DEBUG:
-  // console.debug({ animations })
-  // console.debug({ running: anime.running })
+const animation = {
+  animate: async (animations: Animation[]) => {
+    // DEBUG:
+    // console.debug({ animations })
+    // console.debug({ running: anime.running })
 
-  const animationPromises: Promise<void>[] = []
+    const animationPromises: Promise<void>[] = []
 
-  animations.forEach((animation: Animation) => {
-    animationPromises.push(
-      anime({
-        targets: animation.targets,
-        ...animation.transformations,
+    animations.forEach((animation: Animation) => {
+      animationPromises.push(
+        anime({
+          targets: animation.targets,
+          ...animation.transformations,
 
-        duration: animation.duration ?? defaultAnimation.duration,
-        delay: animation.stagger ? anime.stagger(animation.stagger as number) : defaultAnimation.stagger,
-        easing: animation.easing ?? defaultAnimation.easing,
-        loop: animation.loop ?? defaultAnimation.loop,
-        direction: animation.direction ?? defaultAnimation.direction,
-      }).finished
-    )
-  })
+          duration: animation.duration ?? defaultAnimation.duration,
+          delay: animation.stagger ? anime.stagger(animation.stagger as number) : defaultAnimation.stagger,
+          easing: animation.easing ?? defaultAnimation.easing,
+          loop: animation.loop ?? defaultAnimation.loop,
+          direction: animation.direction ?? defaultAnimation.direction,
+        }).finished
+      )
+    })
 
-  await Promise.all(animationPromises)
+    await Promise.all(animationPromises)
+  },
+  // TODO: replace 'any' with AnimeTarget?
+  remove: (target: any) => {
+    anime.remove(target)
+  },
 }
 
-// TODO: replace any with AnimeTarget?
-const remove = (target: any) => {
-  anime.remove(target)
-}
-
-export { animate, remove }
-export default { animate, remove }
+export { animation }
+export default { animation }

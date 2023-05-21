@@ -1,17 +1,17 @@
-import React, { useContext, useEffect, useRef } from 'react'
-import { AppContext } from '@/types'
+import React, { useEffect, useRef } from 'react'
+import { Store } from '@/types'
 
-import { Context } from '@/Context'
-import event from '@/libraries/event'
-import { setupCanvas } from '@/libraries/scene'
+import { useStore } from '@/libraries/store'
+import { event } from '@/libraries/event'
+import { view } from '@/libraries/scene'
 
 const Canvas = () => {
-  const context = useContext<AppContext>(Context)
+  const settings = useStore((state: Store) => state.settings)
   const canvas = useRef<HTMLCanvasElement>(null)
 
   useEffect(() => {
     if (canvas.current) {
-      setupCanvas(canvas.current)
+      view.setup(canvas.current)
     }
 
     return () => {
@@ -20,20 +20,20 @@ const Canvas = () => {
   }, [])
 
   useEffect(() => {
-    event.dispatch('exitScene', { newScene: context.settings.scene })
-  }, [context.settings.scene])
+    event.dispatch('exitScene')
+  }, [settings.scene])
 
   // TODO: tween the colors?
   const backgroundColors = [
     `hsl(
-      ${context.settings.background[0] + 6}, 
-      ${context.settings.background[1]}%, 
-      ${context.settings.background[2] + 6}%
+      ${settings.background[0] - 12}, 
+      ${settings.background[1]}%, 
+      ${settings.background[2]}%
     )`,
     `hsl(
-      ${context.settings.background[0]}, 
-      ${context.settings.background[1]}%, 
-      ${context.settings.background[2]}%
+      ${settings.background[0]}, 
+      ${settings.background[1]}%, 
+      ${settings.background[2]}%
     )`,
   ]
 

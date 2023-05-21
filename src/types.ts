@@ -1,24 +1,23 @@
-import { Dispatch, SetStateAction } from 'react'
 import { Container } from 'pixi.js'
 import { StaggerOptions, DirectionOptions, EasingOptions } from 'animejs'
 
-export type AppContext = {
+export type Store = {
   isPlaying: boolean
-  setIsPlaying: Dispatch<SetStateAction<boolean>>
   isMuted: boolean
-  setIsMuted: Dispatch<SetStateAction<boolean>>
   settings: Settings
-  setSettings: Dispatch<SetStateAction<Settings>>
   progress: Progress
-  setProgress: Dispatch<SetStateAction<Progress>>
-}
 
+  togglePlaying: () => void
+  toggleMuted: () => void
+  updateSettings: (newSettings: Settings) => void
+  updateProgress: (newProgress: Progress) => void
+}
 export type Settings = {
   speed: number
   cycles: number
-  pattern: [number, number, number, number]
+  pattern: Pattern
   scene: Scenes
-  background: [number, number, number]
+  background: Background
 }
 
 export type Progress = {
@@ -28,13 +27,11 @@ export type Progress = {
   count: number
 }
 
-export type AppContextEvents = 'updateSettings' | 'updateProgress'
+export type Pattern = [number, number, number, number]
+export type Background = [number, number, number]
+
 export type LoopEvents = 'startLoop' | 'resetLoop'
-
-// prettier-ignore
 export type SceneEvents = 'enterScene' | 'exitScene' | 'startScene' | 'stopScene' | 'idleScene' | 'loopScene'
-
-export type Events = AppContextEvents | LoopEvents | SceneEvents
 
 export type Scene = {
   container: () => Container
@@ -66,7 +63,8 @@ export type Durations = {
 
 export type DurationFractions = Durations
 
-// TODO: figure out the type for 'any' targets and transformations
+// TODO: figure out the type for 'any' targets
+// TODO: figure out the type for 'any' transformations
 export type Animation = {
   targets: any[]
   transformations: any

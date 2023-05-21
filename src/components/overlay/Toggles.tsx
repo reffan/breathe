@@ -1,46 +1,44 @@
-import React, { useContext } from 'react'
-import { AppContext } from '@/types'
+import React from 'react'
+import { Store } from '@/types'
 
-import { Context } from '@/Context'
-import event from '@/libraries/event'
+import { useStore } from '@/libraries/store'
+import { event } from '@/libraries/event'
 import { play as playLabel, mute as muteLabel } from '@/utilities/labels'
 
 const Toggles = () => {
-  const context = useContext<AppContext>(Context)
+  const isPlaying = useStore((state: Store) => state.isPlaying)
+  const isMuted = useStore((state: Store) => state.isMuted)
+  const [togglePlaying, toggleMuted] = useStore((state: Store) => [state.togglePlaying, state.toggleMuted])
 
   const togglePlay = () => {
-    if (!context.isPlaying) {
+    if (!isPlaying) {
       event.dispatch('startScene')
-      event.dispatch('startLoop', { currentSettings: context.settings })
+      event.dispatch('startLoop')
     } else {
       event.dispatch('stopScene')
       event.dispatch('resetLoop')
     }
 
-    context.setIsPlaying((currentState: boolean): boolean => {
-      return !currentState
-    })
+    togglePlaying()
   }
 
   const toggleMute = () => {
-    context.setIsMuted((currentState: boolean): boolean => {
-      return !currentState
-    })
+    toggleMuted()
   }
 
   return (
     <>
       <button type='button' onClick={togglePlay} className='toggles-button'>
         <div className='toggles-indicator'>
-          <span className={['icon', !context.isPlaying ? 'start' : 'stop'].join(' ')} />
+          <span className={['icon', !isPlaying ? 'start' : 'stop'].join(' ')} />
         </div>
-        <span className='toggles-text'>{playLabel[+context.isPlaying]}</span>
+        <span className='toggles-text'>{playLabel[+isPlaying]}</span>
       </button>
       <button type='button' onClick={toggleMute} className='toggles-button'>
         <div className='toggles-indicator'>
-          <span className={['icon', !context.isMuted ? 'mute' : 'unmute'].join(' ')} />
+          <span className={['icon', !isMuted ? 'mute' : 'unmute'].join(' ')} />
         </div>
-        <span className='toggles-text'>{muteLabel[+context.isMuted]}</span>
+        <span className='toggles-text'>{muteLabel[+isMuted]}</span>
       </button>
     </>
   )

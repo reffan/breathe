@@ -1,38 +1,40 @@
-import React, { useContext } from 'react'
-import { AppContext } from '@/types'
+import React from 'react'
+import { Store } from '@/types'
 
-import { Context } from '@/Context'
+import { useStore } from '@/libraries/store'
 import { TOTAL_COUNTDOWN_COUNTS } from '@/utilities/constants'
 import { countdown as countdownLabel, steps as stepsLabel } from '@/utilities/labels'
 
 const Header = () => {
-  const context = useContext<AppContext>(Context)
+  const isPlaying = useStore((state: Store) => state.isPlaying)
+  const settings = useStore((state: Store) => state.settings)
+  const progress = useStore((state: Store) => state.progress)
 
   const progressPercentage = () => {
-    if (!context.isPlaying) {
+    if (!isPlaying) {
       return 0
     }
 
-    if (context.progress.countdown < TOTAL_COUNTDOWN_COUNTS) {
+    if (progress.countdown < TOTAL_COUNTDOWN_COUNTS) {
       return 0
     }
 
-    const countsInCycle = context.settings.pattern.reduce((totalCounts, stepCounts) => {
+    const countsInCycle = settings.pattern.reduce((totalCounts, stepCounts) => {
       return totalCounts + stepCounts
     }, 0)
 
-    const totalCountsInCycles = context.settings.cycles * countsInCycle
+    const totalCountsInCycles = settings.cycles * countsInCycle
 
     let totalProgressCounts = 0
-    totalProgressCounts += context.progress.cycle * countsInCycle
+    totalProgressCounts += progress.cycle * countsInCycle
 
-    if (context.progress.step > 0) {
-      for (let i = 0; i <= context.progress.step - 1; i++) {
-        totalProgressCounts += context.settings.pattern[i]
+    if (progress.step > 0) {
+      for (let i = 0; i <= progress.step - 1; i++) {
+        totalProgressCounts += settings.pattern[i]
       }
     }
 
-    totalProgressCounts += context.progress.count
+    totalProgressCounts += progress.count
 
     // MARK: Add 1 for immediate display
     totalProgressCounts += 1
@@ -43,33 +45,31 @@ const Header = () => {
   }
 
   const countdownText = () => {
-    if (!context.isPlaying) {
+    if (!isPlaying) {
       return null
     }
 
-    if (context.progress.countdown >= TOTAL_COUNTDOWN_COUNTS) {
+    if (progress.countdown >= TOTAL_COUNTDOWN_COUNTS) {
       return null
     }
 
-    return countdownLabel[context.progress.countdown]
+    return countdownLabel[progress.countdown]
   }
 
   const progressText = () => {
-    if (!context.isPlaying) {
+    if (!isPlaying) {
       return null
     }
 
-    if (context.progress.count === -1) {
+    if (progress.count === -1) {
       return null
     }
 
-    if (context.progress.cycle === context.settings.cycles) {
+    if (progress.cycle === settings.cycles) {
       return null
     }
 
-    return `${stepsLabel[context.progress.step]}... ${
-      context.settings.pattern[context.progress.step] - context.progress.count
-    }`
+    return `${stepsLabel[progress.step]}... ${settings.pattern[progress.step] - progress.count}`
   }
 
   return (
