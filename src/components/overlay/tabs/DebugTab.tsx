@@ -3,7 +3,7 @@ import { Store } from '@/types'
 
 import { useStore } from '@/libraries/store'
 
-const Debug = () => {
+const DebugTab = () => {
   const isPlaying = useStore((state: Store) => state.isPlaying)
   const isMuted = useStore((state: Store) => state.isMuted)
   const settings = useStore((state: Store) => state.settings)
@@ -12,14 +12,16 @@ const Debug = () => {
   return (
     <>
       <h2>DEBUG</h2>
-      <pre>isPlaying: {JSON.stringify(isPlaying, null, 2)}</pre>
-      <pre>isMuted: {JSON.stringify(isMuted, null, 2)}</pre>
-      <h3>Settings</h3>
-      <pre>{JSON.stringify(settings, null, 2)}</pre>
-      <h3>Progress</h3>
-      <pre>{JSON.stringify(progress, null, 2)}</pre>
+      <section>
+        <pre>isPlaying: {JSON.stringify(isPlaying, null, 2)}</pre>
+        <pre>isMuted: {JSON.stringify(isMuted, null, 2)}</pre>
+        <h3>Settings</h3>
+        <pre>{JSON.stringify(settings, null, 2)}</pre>
+        <h3>Progress</h3>
+        <pre>{JSON.stringify(progress, null, 2)}</pre>
+      </section>
     </>
   )
 }
 
-export default Debug
+export default DebugTab

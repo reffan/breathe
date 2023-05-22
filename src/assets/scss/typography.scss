@@ -1,21 +1,38 @@
-@use './variables.scss';
+@use './variables';
 
-@import url('https://fonts.googleapis.com/css?family=ABeeZee:400,400i&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=ABeeZee&display=swap');
 
 html,
 body {
-  font-family: sans-serif;
+  font-family: 'ABeeZee', sans-serif;
+  letter-spacing: 0.06em;
 }
 
 a,
 .a {
-  color: hsl(0%, 0, 100);
+  color: variables.$color_text;
+
+  text-decoration: none;
+}
+
+.link {
+  color: variables.$color_text;
+
+  border-bottom: 0.125rem solid variables.$color_link-indicator;
+
+  cursor: pointer;
+
+  &:hover,
+  // &:focus,
+  &:active {
+    border-bottom: 0.125rem solid variables.$color_link-indicator--hover;
+  }
 }
 
 h1,
 .h1 {
-  font-size: 2rem;
-  line-height: 2rem;
+  font-size: 1.5rem;
+  line-height: 1.5rem;
 }
 
 h2,
@@ -24,10 +41,11 @@ h2,
 
   font-size: 1.5rem;
   line-height: 1.5rem;
+  letter-spacing: 0.03em;
 }
 
 .subtitle {
-  margin-bottom: 2rem;
+  display: block;
 
   color: variables.$color_subtitle;
 }

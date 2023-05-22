@@ -75,7 +75,7 @@ const Header = () => {
   return (
     <>
       <div className='overlay-branding'>
-        <h1>B R E A T H E</h1>
+        <h1 className='branding-logo'>B R E A T H E</h1>
       </div>
       <div className='overlay-progress'>
         <div className='progress-bar'>

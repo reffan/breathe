@@ -1,11 +1,12 @@
-import React, { ChangeEvent } from 'react'
+import React from 'react'
 import { Store, Settings, Scenes } from '@/types'
 
 import { useStore } from '@/libraries/store'
 import { scenes } from '@/utilities/scenes'
+// import { backgrounds } from '@/utilities/backgrounds'
 import { background } from '@/utilities/labels'
 
-const Scene = () => {
+export const SceneSection = () => {
   const settings = useStore((state: Store) => state.settings)
   const updateSettings = useStore((state: Store) => state.updateSettings)
 
@@ -15,16 +16,8 @@ const Scene = () => {
     updateSettings(newSettings)
   }
 
-  const changeBackground = (event: ChangeEvent<HTMLInputElement>, value: number) => {
-    const newSettings: Settings = { ...settings }
-    newSettings.background[value] = +event.target.value
-    updateSettings(newSettings)
-  }
-
   return (
-    <>
-      <h2>Scene</h2>
-      <span className='subtitle'>Current Scene: {settings.scene}</span>
+    <section>
       <div className='controls'>
         <ul className='scenes-switcher'>
           {scenes.map((scene, index) => {
@@ -35,8 +28,7 @@ const Scene = () => {
                   onClick={() => {
                     changeScene(scene.scene)
                   }}
-                  // prettier-ignore
-                  className={['scenes-switch', settings.scene === scene.scene ? 'active' : 'inactive'].join(' ')}
+                  className='scenes-switch'
                 >
                   {scene.name}
                 </button>
@@ -45,7 +37,42 @@ const Scene = () => {
           })}
         </ul>
       </div>
+    </section>
+  )
+}
+
+export const BackgroundSection = () => {
+  const settings = useStore((state: Store) => state.settings)
+  const updateSettings = useStore((state: Store) => state.updateSettings)
+
+  const changeBackground = (value: number, index: number) => {
+    const newSettings: Settings = { ...settings }
+    newSettings.background[index] = value
+    updateSettings(newSettings)
+  }
+
+  return (
+    <section>
       <div className='controls'>
+        {/* MARK: Keep it simple */}
+        {/* <ul className='backgrounds-switcher'>
+          {backgrounds.map((background, index) => {
+            const hsl = `hsl(${backgrounds[index].background[0]}, ${backgrounds[index].background[1]}%, ${backgrounds[index].background[2]}%`
+            return (
+              <li key={`preset-controls-${index}`}>
+                <button
+                  type='button'
+                  onClick={() => {
+                    changeBackground(backgrounds[index].background[0], 0)
+                  }}
+                  className='backgrounds-switch'
+                >
+                  <div className='swatch' style={{ backgroundColor: hsl }} />
+                </button>
+              </li>
+            )
+          })}
+        </ul> */}
         {background.map((valueLabel, index) => {
           return (
             <div key={`scene-controls-${index}`} className='controls-range'>
@@ -67,17 +94,15 @@ const Scene = () => {
                 step='1'
                 min='0'
                 max={index === 0 ? 360 : 100}
+                value={settings.background[index]}
                 onChange={(e) => {
-                  changeBackground(e, index)
+                  changeBackground(+e.target.value, index)
                 }}
-                defaultValue={settings.background[index]}
               />
             </div>
           )
         })}
       </div>
-    </>
+    </section>
   )
 }
-
-export default Scene

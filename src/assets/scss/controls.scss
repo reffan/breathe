@@ -1,8 +1,68 @@
+@use './variables';
+@use './controls.range' with (
+    $track-color: variables.$color_input-range--track,
+    $thumb-color: variables.$color_input-range--thumb,
+
+    $thumb-radius: 0.75rem,
+    $thumb-height: 1.5rem,
+    $thumb-width: 1.5rem,
+    $thumb-shadow-size: 0,
+    $thumb-shadow-blur: 0,
+    $thumb-shadow-color: transparent,
+    $thumb-border-width: 0,
+    $thumb-border-color: variables.$color_input-range--thumb,
+
+    $track-width: 100%,
+    $track-height: 0.25rem,
+    $track-shadow-size: 0,
+    $track-shadow-blur: 0,
+    $track-shadow-color: transparent,
+    $track-border-width: 0,
+    $track-border-color: variables.$color_input-range--track,
+
+    $track-radius: 0.5rem,
+    $contrast: 5%,
+
+    // $ie-bottom-track-color: darken($track-color, $contrast)
+  );
+
+button {
+  letter-spacing: 0.06em;
+
+  &.link {
+    appearance: none;
+    padding-bottom: 0.125rem;
+
+    width: fit-content;
+
+    background: transparent;
+    border-top: none;
+    border-left: none;
+    border-right: none;
+  }
+}
+
+input[type='range'] {
+  &::-webkit-slider-thumb {
+    cursor: pointer !important;
+  }
+  &::-moz-range-thumb {
+    cursor: pointer !important;
+  }
+  &::-ms-thumb {
+    cursor: pointer !important;
+  }
+}
+
 .controls {
   label {
-    font-weight: bold;
   }
 
   &-range {
+    margin-bottom: 1.5rem;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
   }
 }

@@ -2,20 +2,26 @@
 $color_foreground: white;
 $color_background: black;
 
-$color_text: hsla(0%, 0, 100, 1);
-$color_subtitle: hsla(0%, 0, 100, 0.6);
+$color_text: hsla(0, 0%, 100%, 1);
+$color_subtitle: hsla(0, 0%, 100%, 0.6);
 
-$color_progress-bar: hsla(0%, 0, 100, 0.12);
-$color_progress-indicator: hsla(0%, 0, 100, 1);
+$color_progress-bar: hsla(0, 0%, 100%, 0.12);
+$color_progress-indicator: hsla(0, 0%, 100%, 1);
 
-$color_tabs: hsla(0%, 0, 0, 0.24);
-$color_tabs-switcher: hsla(0%, 0, 0, 0.06);
+$color_tabs: hsla(0, 0%, 0%, 0.24);
+$color_tabs-switcher: hsla(0, 0%, 0%, 0.06);
 $color_tabs-switch--inactive: transparent;
-$color_tabs-switch--active: hsla(0%, 0, 0, 0.12);
-$color_tabs-switch--hover: hsla(0%, 0, 0, 0.24);
+$color_tabs-switch--active: hsla(0, 0%, 0%, 0.12);
+$color_tabs-switch--hover: hsla(0, 0%, 0%, 0.24);
 
-$color_toggles-indicator: hsla(0%, 0, 100, 0.12);
-$color_toggles-indicator--hover: hsla(0%, 0, 100, 0.24);
+$color_toggles-indicator: hsla(0, 0%, 100%, 0.12);
+$color_toggles-indicator--hover: hsla(0, 0%, 100%, 0.24);
+
+$color_input-range--track: hsla(0, 0%, 100%, 0.48);
+$color_input-range--thumb: hsla(0, 0%, 100%, 1);
+
+$color_link-indicator: hsla(0, 0%, 100%, 0.24);
+$color_link-indicator--hover: hsla(0, 0%, 100%, 0.48);
 
 // MARK: Sizes
 $size_min-height: 100dvh;

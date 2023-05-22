@@ -1,4 +1,4 @@
-@use './variables.scss';
+@use './variables';
 
 #overlay {
   display: grid;
@@ -26,6 +26,20 @@
       justify-content: center;
 
       transition: variables.$transition_is-playing;
+
+      > .branding-logo {
+        display: block;
+
+        width: 12rem;
+        height: 2rem;
+
+        color: transparent;
+
+        background-image: url('./assets/svg/app-logo.svg');
+        background-position: center center;
+        background-repeat: no-repeat;
+        background-size: contain;
+      }
     }
 
     > .overlay-progress {
@@ -49,7 +63,7 @@
       display: flex;
       justify-content: center;
 
-      gap: 3rem;
+      gap: 2.5rem;
 
       margin-top: 3rem;
 
@@ -77,5 +91,4 @@
 
 @import './overlay.progress.scss';
 @import './overlay.tabs.scss';
-@import './overlay.scenes.scss';
 @import './overlay.toggles.scss';

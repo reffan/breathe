@@ -6,7 +6,7 @@ const defaultSettings: Settings = {
   pattern: [4, 0, 8, 0],
 
   scene: 'aqua',
-  background: [264, 60, 60],
+  background: [228, 100, 66],
 }
 
 const defaultProgress: Progress = {

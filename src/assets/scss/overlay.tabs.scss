@@ -1,9 +1,7 @@
-@use './variables.scss';
+@use './variables';
 
 .tabs {
   &-viewer {
-    display: flex;
-
     padding: 2rem;
 
     background-color: variables.$color_tabs;
@@ -14,14 +12,15 @@
 
   &-view {
     &.open {
-      display: flex;
-      flex-direction: column;
-
-      width: 100%;
+      display: initial;
     }
 
     &.closed {
       display: none;
+    }
+
+    > .subtitle {
+      margin-bottom: 2rem;
     }
   }
 
@@ -68,3 +67,23 @@
     }
   }
 }
+
+.sections {
+  &-viewer {
+    margin-bottom: 2rem;
+
+    list-style: none;
+  }
+
+  &-view {
+    &.open {
+      width: 100%;
+    }
+
+    &.closed {
+      display: none;
+    }
+  }
+}
+
+@import './tab.scss';
