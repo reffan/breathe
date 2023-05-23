@@ -46,12 +46,16 @@ const advance = {
     }
 
     store.getState().updateProgress(newProgress)
-    event.dispatch('loopScene')
+
+    if (store.getState().progress.cycle < store.getState().settings.cycles) {
+      event.dispatch('loopScene')
+    }
   },
 }
 
 const loopEvents = {
   startLoop: () => {
+    clearInterval(state.loopIntervalFn)
     loopEvents.updateLoop()
 
     const countDuration = 1000 / store.getState().settings.speed
@@ -69,16 +73,16 @@ const loopEvents = {
       if (store.getState().progress.cycle < store.getState().settings.cycles) {
         advance.count()
       } else {
-        // const countDuration = 1000 / store.getState().settings.speed
-
-        // TODO: why does all of this happen so late?
-        // TODO: how does this one get cleared?
-        // setTimeout(() => {
-        store.getState().togglePlaying()
-
-        event.dispatch('stopScene')
+        // MARK: Stops the loop
+        clearInterval(state.loopIntervalFn)
         loopEvents.resetLoop()
-        // }, countDuration * 2)
+
+        const countDuration = 1000 / store.getState().settings.speed
+
+        setTimeout(() => {
+          event.dispatch('stopScene')
+          store.getState().togglePlaying()
+        }, countDuration)
       }
     }
   },

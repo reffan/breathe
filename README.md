@@ -1,5 +1,5 @@
 # B R E A T H E
 
-## 2023 - React
+> Breathe, be present. A minimal breathing exercise web app.
 
-v20230511
+[Karmic Works](https://karmic.works), 2023

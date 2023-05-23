@@ -27,10 +27,11 @@
   );
 
 button {
+  appearance: none;
+
   letter-spacing: 0.06em;
 
   &.link {
-    appearance: none;
     padding-bottom: 0.125rem;
 
     width: fit-content;

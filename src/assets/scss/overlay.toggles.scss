@@ -2,8 +2,6 @@
 
 .toggles {
   &-button {
-    appearance: none;
-
     width: 5rem;
 
     color: variables.$color_text;
@@ -32,6 +30,13 @@
   &-button:hover {
     .toggles-indicator {
       background-color: variables.$color_toggles-indicator--hover;
+    }
+  }
+
+  &-button:focus,
+  &-button:active {
+    .toggles-indicator {
+      background-color: variables.$color_toggles-indicator--focus;
     }
   }
 

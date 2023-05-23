@@ -41,8 +41,8 @@ const aqua: Scene = {
           radius: [0, state.initial.radius],
           opacity: [0, state.initial.opacity],
         },
-        duration: 1080,
-        stagger: 1080 * 0.18,
+        duration: 1200,
+        stagger: 1200 * 0.18,
       },
     },
     exitScene: {
@@ -53,8 +53,8 @@ const aqua: Scene = {
           radius: 0,
           opacity: 0,
         },
-        duration: 840,
-        stagger: 840 * 0.09,
+        duration: 960,
+        stagger: 960 * 0.09,
       },
     },
     startScene: {
@@ -62,9 +62,10 @@ const aqua: Scene = {
       animation: {
         targets: state.scene.ripples,
         transformations: {
-          radius: 24,
+          radius: 12,
           opacity: state.initial.opacity,
         },
+        easing: 'easeInOutBack',
       },
     },
     stopScene: {
@@ -72,9 +73,10 @@ const aqua: Scene = {
       animation: {
         targets: state.scene.ripples,
         transformations: {
-          radius: 24,
+          radius: state.initial.radius,
           opacity: state.initial.opacity,
         },
+        easing: 'easeInOutBack',
       },
     },
     idleScene: {
@@ -125,14 +127,14 @@ const aqua: Scene = {
           transformations: [
             {},
             {
-              opacity: [0.72, 1],
+              radius: [145, 144],
             },
             {},
             {
-              opacity: [0.72, 1],
+              radius: [13, 12],
             },
           ],
-          easing: 'easeInOutSine',
+          easing: 'easeInOutBack',
         },
       },
     },

@@ -22,10 +22,13 @@ a,
 
   cursor: pointer;
 
-  &:hover,
-  // &:focus,
-  &:active {
+  &:hover {
     border-bottom: 0.125rem solid variables.$color_link-indicator--hover;
+  }
+
+  &:focus,
+  &:active {
+    border-bottom: 0.125rem solid variables.$color_link-indicator--focus;
   }
 }
 

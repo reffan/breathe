@@ -16,12 +16,14 @@ $color_tabs-switch--hover: hsla(0, 0%, 0%, 0.24);
 
 $color_toggles-indicator: hsla(0, 0%, 100%, 0.12);
 $color_toggles-indicator--hover: hsla(0, 0%, 100%, 0.24);
+$color_toggles-indicator--focus: hsla(0, 0%, 100%, 0.18);
 
 $color_input-range--track: hsla(0, 0%, 100%, 0.48);
 $color_input-range--thumb: hsla(0, 0%, 100%, 1);
 
 $color_link-indicator: hsla(0, 0%, 100%, 0.24);
 $color_link-indicator--hover: hsla(0, 0%, 100%, 0.48);
+$color_link-indicator--focus: hsla(0, 0%, 100%, 0.36);
 
 // MARK: Sizes
 $size_min-height: 100dvh;

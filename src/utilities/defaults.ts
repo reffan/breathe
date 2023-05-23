@@ -22,7 +22,7 @@ const defaultAnimation: Partial<Animation> = {
   stagger: 0,
   loop: false,
   direction: 'normal',
-  easing: 'easeInOutQuad',
+  easing: 'easeInOutQuart',
 }
 
 export { defaultSettings, defaultProgress, defaultAnimation }

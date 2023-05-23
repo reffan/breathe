@@ -61,18 +61,18 @@ body {
   background-size: 100%;
 
   &.start {
-    background-image: url('./assets/svg/start.svg');
+    background-image: url('../assets/svg/start.svg');
   }
 
   &.stop {
-    background-image: url('./assets/svg/stop.svg');
+    background-image: url('../assets/svg/stop.svg');
   }
 
   &.mute {
-    background-image: url('./assets/svg/mute.svg');
+    background-image: url('../assets/svg/mute.svg');
   }
 
   &.unmute {
-    background-image: url('./assets/svg/unmute.svg');
+    background-image: url('../assets/svg/unmute.svg');
   }
 }

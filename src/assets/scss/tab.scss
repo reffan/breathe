@@ -37,6 +37,11 @@
         &:hover {
           background-color: variables.$color_toggles-indicator--hover;
         }
+
+        &:focus,
+        &:active {
+          background-color: variables.$color_toggles-indicator--focus;
+        }
       }
     }
   }
@@ -71,6 +76,11 @@
 
         &:hover {
           background-color: variables.$color_toggles-indicator--hover;
+        }
+
+        &:focus,
+        &:active {
+          background-color: variables.$color_toggles-indicator--focus;
         }
       }
     }

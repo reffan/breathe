@@ -6,7 +6,6 @@ import PatternTab from './tabs/PatternTab'
 import SceneTab from './tabs/SceneTab'
 import AboutTab from './tabs/AboutTab'
 
-// TODO: extract this?
 const tabs = [
   // DEBUG:
   // { name: 'DEBUG', component: DebugTab },
