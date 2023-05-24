@@ -4,9 +4,6 @@ html {
   font-size: 75%; // 12px
   line-height: 1rem;
 
-  background-color: variables.$color_background;
-  color: variables.$color_foreground;
-
   user-select: none;
 
   overflow: hidden;
@@ -15,9 +12,6 @@ html {
 
 body {
   min-height: variables.$size_min-height;
-
-  background-color: variables.$color_background;
-  color: variables.$color_foreground;
 }
 
 #app {
@@ -61,18 +55,18 @@ body {
   background-size: 100%;
 
   &.start {
-    background-image: url('../assets/svg/start.svg');
+    background-image: url('/assets/svg/start.svg');
   }
 
   &.stop {
-    background-image: url('../assets/svg/stop.svg');
+    background-image: url('/assets/svg/stop.svg');
   }
 
   &.mute {
-    background-image: url('../assets/svg/mute.svg');
+    background-image: url('/assets/svg/mute.svg');
   }
 
   &.unmute {
-    background-image: url('../assets/svg/unmute.svg');
+    background-image: url('/assets/svg/unmute.svg');
   }
 }
