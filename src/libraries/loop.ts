@@ -1,9 +1,9 @@
-import { Progress, LoopEvents, Durations, DurationFractions } from '@/types'
+import type { Progress, LoopEvents, Durations, DurationFractions } from '@src/types'
 
-import { store } from '@/libraries/store'
-import { event } from '@/libraries/event'
-import { TOTAL_COUNTDOWN_COUNTS, TOTAL_PATTERN_STEPS } from '@/utilities/constants'
-import { defaultProgress } from '@/utilities/defaults'
+import { store } from '@libraries/store'
+import { event } from '@libraries/event'
+import { TOTAL_COUNTDOWN_COUNTS, TOTAL_PATTERN_STEPS } from '@utilities/constants'
+import { defaultProgress } from '@utilities/defaults'
 
 type State = {
   loopIntervalFn?: ReturnType<typeof setInterval>
@@ -17,30 +17,38 @@ const advance = {
   countdown: () => {
     const newProgress: Progress = { ...store.getState().progress }
 
-    // MARK: Advance the countdown
     newProgress.countdown++
     store.getState().updateProgress(newProgress)
   },
   count: () => {
     const newProgress: Progress = { ...store.getState().progress }
 
-    // MARK: Advance the count
-    newProgress.count++
+    // prettier-ignore
+    const shouldAdvanceCount = true
+    if (shouldAdvanceCount) {
+      newProgress.count++
+    }
 
-    // MARK: Advance the step
-    if (newProgress.count > store.getState().settings.pattern[newProgress.step] - 1) {
+    // prettier-ignore
+    const shouldAdvanceStep = newProgress.count > store.getState().settings.pattern[newProgress.step] - 1
+    if (shouldAdvanceStep) {
       newProgress.step++
 
       // MARK: Skip to next step if step has no counts in it
-      while (store.getState().settings.pattern[newProgress.step] == 0 && newProgress.step < TOTAL_PATTERN_STEPS) {
+      // TODO: check this logic
+
+      // prettier-ignore
+      const shouldSkipStep = store.getState().settings.pattern[newProgress.step] == 0 && newProgress.step < TOTAL_PATTERN_STEPS
+      while (shouldSkipStep) {
         newProgress.step++
       }
 
       newProgress.count = 0
     }
 
-    // MARK: Advance the cycle
-    if (newProgress.step >= TOTAL_PATTERN_STEPS) {
+    // prettier-ignore
+    const shouldAdvanceCycle = newProgress.step >= TOTAL_PATTERN_STEPS
+    if (shouldAdvanceCycle) {
       newProgress.cycle++
       newProgress.step = 0
     }
@@ -73,7 +81,6 @@ const loopEvents = {
       if (store.getState().progress.cycle < store.getState().settings.cycles) {
         advance.count()
       } else {
-        // MARK: Stops the loop
         clearInterval(state.loopIntervalFn)
         loopEvents.resetLoop()
 

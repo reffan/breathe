@@ -1,9 +1,9 @@
 import React from 'react'
-import { Store } from '@/types'
+import type { Store } from '@src/types'
 
-import { useStore } from '@/libraries/store'
-import { TOTAL_COUNTDOWN_COUNTS } from '@/utilities/constants'
-import { countdown as countdownLabel, steps as stepsLabel } from '@/utilities/labels'
+import { useStore } from '@libraries/store'
+import { TOTAL_COUNTDOWN_COUNTS } from '@utilities/constants'
+import { countdown as countdownLabel, steps as stepsLabel } from '@utilities/labels'
 
 const Header = () => {
   const isPlaying = useStore((state: Store) => state.isPlaying)

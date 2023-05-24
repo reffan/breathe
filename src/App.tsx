@@ -1,7 +1,7 @@
 import React from 'react'
 
-import Canvas from '@/components/Canvas'
-import Overlay from '@/components/Overlay'
+import Canvas from '@components/Canvas'
+import Overlay from '@components/Overlay'
 
 const App = () => {
   return (

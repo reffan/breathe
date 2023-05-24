@@ -1,8 +1,8 @@
 import React, { useState } from 'react'
-import { Store } from '@/types'
+import type { Store } from '@src/types'
 
-import { useStore } from '@/libraries/store'
-import { scenes } from '@/utilities/scenes'
+import { useStore } from '@libraries/store'
+import { scenes } from '@utilities/scenes'
 
 import { SceneSection, BackgroundSection } from './sections/SceneTabSections'
 

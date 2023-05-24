@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
-import { Store } from '@/types'
+import type { Store } from '@src/types'
 
-import { useStore } from '@/libraries/store'
+import { useStore } from '@libraries/store'
 
 import { PatternSection, PresetSection } from './sections/PatternTabSections'
 

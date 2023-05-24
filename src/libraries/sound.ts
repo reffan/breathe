@@ -1,5 +1,5 @@
 import { sound as Sound } from '@pixi/sound'
-import { Sounds } from '@/types'
+import type { Sounds } from '@src/types'
 
 Sound.add('kalimba-b3', { url: './assets/audio/kalimba-b3.aac', volume: 0.25, preload: true })
 

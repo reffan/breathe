@@ -1,4 +1,4 @@
-import { Background } from '@/types'
+import type { Background } from '@src/types'
 
 const backgrounds: { name: string; background: Background }[] = [
   {

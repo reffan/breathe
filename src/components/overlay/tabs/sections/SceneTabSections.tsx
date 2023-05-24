@@ -1,10 +1,10 @@
 import React from 'react'
-import { Store, Settings, Scenes } from '@/types'
+import type { Store, Settings, Scenes } from '@src/types'
 
-import { useStore } from '@/libraries/store'
-import { scenes } from '@/utilities/scenes'
-// import { backgrounds } from '@/utilities/backgrounds'
-import { background } from '@/utilities/labels'
+import { useStore } from '@libraries/store'
+import { scenes } from '@utilities/scenes'
+// import { backgrounds } from '@utilities/backgrounds'
+import { background } from '@utilities/labels'
 
 export const SceneSection = () => {
   const settings = useStore((state: Store) => state.settings)

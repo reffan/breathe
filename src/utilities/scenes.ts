@@ -1,4 +1,4 @@
-import { Scenes } from '@/types'
+import type { Scenes } from '@src/types'
 
 const scenes: { name: string; scene: Scenes }[] = [
   // DEBUG:

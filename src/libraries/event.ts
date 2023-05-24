@@ -1,4 +1,4 @@
-import { LoopEvents, SceneEvents } from '@/types'
+import type { LoopEvents, SceneEvents } from '@src/types'
 
 const event = {
   subscribe: (name: LoopEvents | SceneEvents, listener: EventListenerOrEventListenerObject) => {

@@ -1,9 +1,9 @@
 import React, { useEffect, useRef } from 'react'
-import { Store } from '@/types'
+import type { Store } from '@src/types'
 
-import { useStore } from '@/libraries/store'
-import { event } from '@/libraries/event'
-import { view } from '@/libraries/scene'
+import { useStore } from '@libraries/store'
+import { event } from '@libraries/event'
+import { view } from '@libraries/scene'
 
 const Canvas = () => {
   const settings = useStore((state: Store) => state.settings)

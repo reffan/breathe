@@ -1,6 +1,6 @@
 // MARK: For testing purposes
 import { Container, Graphics } from 'pixi.js'
-import { Scene } from '@/types'
+import type { Scene } from '@src/types'
 
 const container = new Container()
 container.eventMode = 'none'

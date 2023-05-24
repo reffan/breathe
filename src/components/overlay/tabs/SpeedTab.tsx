@@ -1,7 +1,8 @@
-import React, { ChangeEvent } from 'react'
-import { Store, Settings } from '@/types'
+import React from 'react'
+import type { ChangeEvent } from 'react'
+import type { Store, Settings } from '@src/types'
 
-import { useStore } from '@/libraries/store'
+import { useStore } from '@libraries/store'
 
 const SpeedTab = () => {
   const settings = useStore((state: Store) => state.settings)

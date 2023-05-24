@@ -1,7 +1,7 @@
 import anime from 'animejs'
-import { Animation } from '@/types'
+import type { Animation } from '@src/types'
 
-import { defaultAnimation } from '@/utilities/defaults'
+import { defaultAnimation } from '@utilities/defaults'
 
 const animation = {
   animate: async (animations: Animation[]) => {

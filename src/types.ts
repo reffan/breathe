@@ -1,5 +1,5 @@
-import { Container } from 'pixi.js'
-import { StaggerOptions, DirectionOptions, EasingOptions } from 'animejs'
+import type { Container } from 'pixi.js'
+import type { StaggerOptions, DirectionOptions, EasingOptions } from 'animejs'
 
 export type Store = {
   isPlaying: boolean

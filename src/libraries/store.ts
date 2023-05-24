@@ -1,7 +1,7 @@
 import { create } from 'zustand'
-import { Settings, Progress, Store } from '@/types'
+import type { Settings, Progress, Store } from '@src/types'
 
-import { defaultSettings, defaultProgress } from '@/utilities/defaults'
+import { defaultSettings, defaultProgress } from '@utilities/defaults'
 
 const useStore = create<Store>()((set) => ({
   isPlaying: false,

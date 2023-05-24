@@ -1,12 +1,12 @@
 import React, { useEffect } from 'react'
 import NoSleep from 'nosleep.js'
-import { Store } from '@/types'
+import type { Store } from '@src/types'
 
-import { useStore } from '@/libraries/store'
+import { useStore } from '@libraries/store'
 
-import Header from '@/components/overlay/Header'
-import Tabs from '@/components/overlay/Tabs'
-import Toggles from '@/components/overlay/Toggles'
+import Header from '@components/overlay/Header'
+import Tabs from '@components/overlay/Tabs'
+import Toggles from '@components/overlay/Toggles'
 
 const noSleep = new NoSleep()
 

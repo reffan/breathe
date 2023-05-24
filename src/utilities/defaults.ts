@@ -1,4 +1,4 @@
-import { Settings, Progress, Animation } from '@/types'
+import type { Settings, Progress, Animation } from '@src/types'
 
 const defaultSettings: Settings = {
   speed: 1,

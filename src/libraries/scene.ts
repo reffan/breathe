@@ -1,12 +1,13 @@
-import { ICanvas, IRenderer, IRendererOptionsAuto, autoDetectRenderer } from 'pixi.js'
-import { SceneEvents, Scene, Animation, Sounds } from '@/types'
+import { autoDetectRenderer } from 'pixi.js'
+import type { ICanvas, IRenderer, IRendererOptionsAuto } from 'pixi.js'
+import type { SceneEvents, Scene, Animation, Sounds } from '@src/types'
 
-import { store } from '@/libraries/store'
-import { event } from '@/libraries/event'
-import { animation } from '@/libraries/animation'
-import { sound } from '@/libraries/sound'
-import { loopDurations } from '@/libraries/loop'
-import { ENTER_SCENE_DELAY } from '@/utilities/constants'
+import { store } from '@libraries/store'
+import { event } from '@libraries/event'
+import { animation } from '@libraries/animation'
+import { sound } from '@libraries/sound'
+import { loopDurations } from '@libraries/loop'
+import { ENTER_SCENE_DELAY } from '@utilities/constants'
 
 type State = {
   renderer?: IRenderer<ICanvas>
@@ -120,8 +121,9 @@ const sceneEvents = {
     const animations: Animation[] = []
     const sounds: Sounds[] = []
 
-    // MARK: Cycle
-    if (stage.cycle && store.getState().progress.step === 0 && store.getState().progress.count === 0) {
+    // prettier-ignore
+    const shouldTriggerCycle = store.getState().progress.step === 0 && store.getState().progress.count === 0
+    if (stage.cycle && shouldTriggerCycle) {
       if (stage.cycle.sound) {
         sounds.push(stage.cycle.sound)
       }
@@ -134,8 +136,9 @@ const sceneEvents = {
       })
     }
 
-    // MARK: Step
-    if (stage.step && store.getState().progress.count === 0) {
+    // prettier-ignore
+    const shouldTriggerStep = store.getState().progress.count === 0 ? true : false
+    if (stage.step && shouldTriggerStep) {
       if (stage.step.sound) {
         sounds.push(stage.step.sound)
       }
@@ -150,8 +153,9 @@ const sceneEvents = {
       })
     }
 
-    // MARK: Count
-    if (stage.count) {
+    // prettier-ignore
+    const shouldTriggerCount = true
+    if (stage.count && shouldTriggerCount) {
       if (stage.count.sound) {
         sounds.push(stage.count.sound)
       }

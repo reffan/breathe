@@ -1,9 +1,9 @@
 import React from 'react'
-import { Store } from '@/types'
+import type { Store } from '@src/types'
 
-import { useStore } from '@/libraries/store'
-import { event } from '@/libraries/event'
-import { play as playLabel, mute as muteLabel } from '@/utilities/labels'
+import { useStore } from '@libraries/store'
+import { event } from '@libraries/event'
+import { play as playLabel, mute as muteLabel } from '@utilities/labels'
 
 const Toggles = () => {
   const isPlaying = useStore((state: Store) => state.isPlaying)

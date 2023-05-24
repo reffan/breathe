@@ -1,9 +1,9 @@
 import React from 'react'
-import { Store, Settings } from '@/types'
+import type { Store, Settings } from '@src/types'
 
-import { useStore } from '@/libraries/store'
-import { patterns } from '@/utilities/patterns'
-import { steps } from '@/utilities/labels'
+import { useStore } from '@libraries/store'
+import { patterns } from '@utilities/patterns'
+import { steps } from '@utilities/labels'
 
 export const PatternSection = () => {
   const settings = useStore((state: Store) => state.settings)
